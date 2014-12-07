@@ -15,25 +15,14 @@ class DarTask extends Jar {
 
   DarTask() {
     extension = DAR_EXTENSION
-
     project.afterEvaluate {
-
-      def manifestAndArtifacts = analyzeManifest()
-
-      rootSpec.into('') {
-        from manifestAndArtifacts.manifest
-      }
-      manifestAndArtifacts.artifactPathToFile.each { entryFolder, object ->
-        rootSpec.into(entryFolder) {
-          from object
-        }
-      }
+      doAfterEvaluate()
     }
   }
 
   @Override
   protected void copy() {
-    def manifest = analyzeManifest()
+    def manifest = renderManifest()
     def fw = new FileWriter(manifest.manifest)
     fw.write(manifest.resolvedManifestContent)
     fw.close()
@@ -45,33 +34,31 @@ class DarTask extends Jar {
     return project.file(ext.manifest)
   }
 
+  protected void doAfterEvaluate() {
+    def manifestAndArtifacts = analyzeManifest()
+
+    rootSpec.into('') {
+      from manifestAndArtifacts.manifest
+    }
+    manifestAndArtifacts.artifactPathToFile.each { entryPath, object ->
+      def entryFolder = (entryPath =~ /\/[^\/]+$/).replaceFirst('')
+      rootSpec.into(entryFolder) {
+        from object
+      }
+    }
+  }
+
   protected ManifestAndArtifacts analyzeManifest() throws ProjectConfigurationException {
     if (!getDarManifest().exists()) {
       throw new ProjectConfigurationException("DAR manifest file does not exist: [${getDarManifest()}]",
           new FileNotFoundException(getDarManifest().toString()))
     }
     try {
-      def template = new SimpleTemplateEngine().createTemplate(getDarManifest())
 
-      def result = new ManifestAndArtifacts()
-      def artifactToDarEntry = { Object o ->
-        def pathAndFile = resolveFileAndDarPath(o)
-        result.artifactPathToFile[pathAndFile.entryFolder] = pathAndFile.file
-        return pathAndFile.entryPath
-      }
-
-      def binding = [
-          project: project,
-          artifact: artifactToDarEntry
-      ]
-
-      result.manifest = new File(this.temporaryDir, 'deployit-manifest.xml')
-      def sw = new StringWriter()
-      template.make(binding).writeTo(sw)
-      result.resolvedManifestContent = sw.toString()
+      def result = renderManifest()
 
       logger.debug("Resolved manifest content:\n${result.resolvedManifestContent}")
-      logger.debug("DAR artifacts mapping:\n${result.artifactPathToFile}")
+      logger.debug("DAR artifacts mapping: ${result.artifactPathToFile}")
 
       try {
         new XmlParser().parseText(result.resolvedManifestContent)
@@ -87,6 +74,29 @@ class DarTask extends Jar {
     } catch (GroovyRuntimeException e) {
       throw new ProjectConfigurationException("Failed to process DAR manifest file [${getDarManifest()}]", e)
     }
+  }
+
+  protected ManifestAndArtifacts renderManifest() {
+    def template = new SimpleTemplateEngine().createTemplate(getDarManifest())
+
+    def result = new ManifestAndArtifacts()
+    def artifactToDarEntry = { Object o ->
+      def pathAndFile = resolveFileAndDarPath(o)
+      result.artifactPathToFile[pathAndFile.entryPath] = pathAndFile.file
+      return pathAndFile.entryPath
+    }
+
+    def binding = [
+        project: project,
+        artifact: artifactToDarEntry
+    ]
+
+    result.manifest = new File(this.temporaryDir, 'deployit-manifest.xml')
+    def sw = new StringWriter()
+    template.make(binding).writeTo(sw)
+    result.resolvedManifestContent = sw.toString()
+
+    result
   }
 
   protected PathAndFile resolveFileAndDarPath(Object o) {
@@ -106,12 +116,11 @@ class DarTask extends Jar {
     if (f.getParentFile().getAbsolutePath().startsWith(project.projectDir.getAbsolutePath())) {
       relativeParent = f.getParentFile().getAbsolutePath().substring(project.projectDir.getAbsolutePath().length())
     } else {
-      relativeParent = UUID.randomUUID()
+      relativeParent = '/' + UUID.randomUUID()
     }
 
     return new PathAndFile().with {
-      entryFolder = 'artifacts' + relativeParent
-      entryPath = entryFolder + '/' + f.getName()
+      entryPath = 'artifacts' + relativeParent + '/' + f.getName()
       file = o
       it
     }
@@ -125,7 +134,6 @@ class DarTask extends Jar {
   }
 
   private class PathAndFile {
-    String entryFolder
     String entryPath
     Object file
   }

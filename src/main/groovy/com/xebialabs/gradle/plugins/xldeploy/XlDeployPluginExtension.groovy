@@ -5,6 +5,5 @@ import org.gradle.api.Project
 class XlDeployPluginExtension {
   Project project
 
-  def version
   File manifest
 }

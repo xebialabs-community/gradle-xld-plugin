@@ -36,7 +36,6 @@ class XlDeployPlugin implements Plugin<Project> {
   static def addExtensions(Project p) {
     p.extensions.create(PLUGIN_EXTENSION_NAME, XlDeployPluginExtension.class).with {
       project = p
-      // Configuration defaults
       manifest = p.file("${project.projectDir}/src/main/dar/deployit-manifest.xml")
       it
     }

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<udm.DeploymentPackage version="${project.version}" application="PetClinic">
+  <deployables>
+    <cmd.Command name="test-command">
+      <commandLine>echo "test"</commandLine>
+    </cmd.Command>
+    <jee.War name="PetClinic" file="${artifact(project.war)}" />
+    <file.File name="file-1" file="${artifact(project.file('file.txt'))}" />
+    <file.File name="file-2" file="${artifact(project.file('../file-2.txt'))}" />
+  </deployables>
+</udm.DeploymentPackage>
