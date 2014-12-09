@@ -2,10 +2,14 @@ package com.xebialabs.gradle.plugins.xldeploy
 
 import groovy.text.SimpleTemplateEngine
 import org.gradle.api.ProjectConfigurationException
+import org.gradle.api.artifacts.Dependency
+import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.bundling.AbstractArchiveTask
 import org.gradle.api.tasks.bundling.Jar
 import org.xml.sax.SAXException
+
+import static com.xebialabs.gradle.plugins.xldeploy.XlDeployPlugin.DAR_CONFIGURATION_NAME
 
 class DarTask extends Jar {
 
@@ -13,20 +17,14 @@ class DarTask extends Jar {
 
   private def ext = project.extensions.getByName(XlDeployPlugin.PLUGIN_EXTENSION_NAME) as XlDeployPluginExtension
 
+  protected ManifestAndArtifacts evaluatedManifest
+
   DarTask() {
+    evaluatedManifest = null
     extension = DAR_EXTENSION
     project.afterEvaluate {
       doAfterEvaluate()
     }
-  }
-
-  @Override
-  protected void copy() {
-    def manifest = renderManifest()
-    def fw = new FileWriter(manifest.manifest)
-    fw.write(manifest.resolvedManifestContent)
-    fw.close()
-    super.copy()
   }
 
   @InputFile
@@ -34,16 +32,34 @@ class DarTask extends Jar {
     return project.file(ext.manifest)
   }
 
+  @Override
+  protected void copy() {
+    assert evaluatedManifest : "Expected manifest to be evaluated here. " +
+        "Is different instance of DarTask used for execution?"
+    def fw = new FileWriter(evaluatedManifest.manifest)
+    fw.write(evaluatedManifest.resolvedManifestContent)
+    fw.close()
+    super.copy()
+  }
+
   protected void doAfterEvaluate() {
-    def manifestAndArtifacts = analyzeManifest()
+
+    evaluatedManifest = analyzeManifest()
 
     rootSpec.into('') {
-      from manifestAndArtifacts.manifest
+      from this.evaluatedManifest.manifest
     }
-    manifestAndArtifacts.artifactPathToFile.each { entryPath, object ->
-      def entryFolder = (entryPath =~ /\/[^\/]+$/).replaceFirst('')
+
+    evaluatedManifest.artifactPathToCopyable.each { entryPath, object ->
+      def f = new File(entryPath)
+      def entryFolder = f.getParent() ?: ''
+      def entryFileName = f.getName()
+
       rootSpec.into(entryFolder) {
-        from object
+        from resolveCopySource(object)
+        rename { ignored ->
+          entryFileName
+        }
       }
     }
   }
@@ -58,7 +74,7 @@ class DarTask extends Jar {
       def result = renderManifest()
 
       logger.debug("Resolved manifest content:\n${result.resolvedManifestContent}")
-      logger.debug("DAR artifacts mapping: ${result.artifactPathToFile}")
+      logger.debug("DAR artifacts mapping: ${result.artifactPathToCopyable}")
 
       try {
         new XmlParser().parseText(result.resolvedManifestContent)
@@ -67,7 +83,7 @@ class DarTask extends Jar {
             "Run with --debug option to see the problematic XML content", e)
       }
 
-      logger.info("Found ${result.artifactPathToFile.size()} artifacts referenced from deployit-manifest.xml")
+      logger.info("Found ${result.artifactPathToCopyable.size()} artifacts referenced from deployit-manifest.xml")
 
       result
 
@@ -80,16 +96,7 @@ class DarTask extends Jar {
     def template = new SimpleTemplateEngine().createTemplate(getDarManifest())
 
     def result = new ManifestAndArtifacts()
-    def artifactToDarEntry = { Object o ->
-      def pathAndFile = resolveFileAndDarPath(o)
-      result.artifactPathToFile[pathAndFile.entryPath] = pathAndFile.file
-      return pathAndFile.entryPath
-    }
-
-    def binding = [
-        project: project,
-        artifact: artifactToDarEntry
-    ]
+    def binding = createBinding(result)
 
     result.manifest = new File(this.temporaryDir, 'deployit-manifest.xml')
     def sw = new StringWriter()
@@ -99,43 +106,85 @@ class DarTask extends Jar {
     result
   }
 
-  protected PathAndFile resolveFileAndDarPath(Object o) {
-    File f
-    if (o instanceof String) {
-      f = new File(o)
-    } else if (o instanceof File) {
-      f = o
-    } else if (o instanceof AbstractArchiveTask) {
-      f = o.archivePath
-    } else {
-      throw new ProjectConfigurationException("Unexpected type of artifact provided: ${o.getClass()} ($o). " +
-          "Supported types are: String, File, AbstractArchiveTask", null)
-    }
+  protected Map<String, Object> createBinding(ManifestAndArtifacts result) {
+    [
+        project: project,
 
-    String relativeParent
-    if (f.getParentFile().getAbsolutePath().startsWith(project.projectDir.getAbsolutePath())) {
+        artifact: { Object o ->
+          def pathAndFile = evaluateCopySource(o)
+          result.artifactPathToCopyable[pathAndFile.entryPath] = pathAndFile.copySource
+          pathAndFile.entryPath
+        },
+
+        dependency: { Object o ->
+          Dependency d = project.dependencies.add(DAR_CONFIGURATION_NAME, o)
+          d
+        }
+    ]
+  }
+
+  protected Object resolveCopySource(Object copySource) {
+    if (copySource instanceof Dependency) {
+      project.configurations.getByName(DAR_CONFIGURATION_NAME).getResolvedConfiguration()
+          .getFiles(new Spec<Dependency>() {
+        @Override
+        boolean isSatisfiedBy(Dependency element) {
+          return element == copySource
+        }
+      })
+    } else {
+      copySource
+    }
+  }
+
+  protected EvaluatedCopySource evaluateCopySource(Object o) {
+    if (o instanceof String) {
+      return evaluateFilePath(new File(o), o)
+    }
+    if (o instanceof File) {
+      return evaluateFilePath(o, o)
+    }
+    if (o instanceof AbstractArchiveTask) {
+      return evaluateFilePath(o.archivePath, o)
+    }
+    if (o instanceof Dependency) {
+      return evaluateDependencyPath(o)
+    }
+    throw new ProjectConfigurationException("Unexpected type of artifact provided: ${o.getClass()} ($o). " +
+          "Supported types are: String, File, AbstractArchiveTask", null)
+  }
+
+  protected EvaluatedCopySource evaluateFilePath(File f, Object object) {
+    def relativeParent
+    if (f.getParentFile() && f.getParentFile().getAbsolutePath().startsWith(project.projectDir.getAbsolutePath())) {
       relativeParent = f.getParentFile().getAbsolutePath().substring(project.projectDir.getAbsolutePath().length())
     } else {
       relativeParent = '/' + UUID.randomUUID()
     }
-
-    return new PathAndFile().with {
+    new EvaluatedCopySource().with {
       entryPath = 'artifacts' + relativeParent + '/' + f.getName()
-      file = o
+      copySource = object
       it
     }
+  }
 
+  protected EvaluatedCopySource evaluateDependencyPath(Dependency d) {
+    new EvaluatedCopySource().with {
+      entryPath = "artifacts/${d.getGroup()}/${d.getName()}-${d.getVersion()}.jar"
+      copySource = d
+      it
+    }
+  }
+
+  private class EvaluatedCopySource {
+    String entryPath
+    Object copySource
   }
 
   private class ManifestAndArtifacts {
     String resolvedManifestContent
     File manifest
-    Map<String, File> artifactPathToFile = [:]
-  }
-
-  private class PathAndFile {
-    String entryPath
-    Object file
+    Map<String, Object> artifactPathToCopyable = [:]
   }
 
 }

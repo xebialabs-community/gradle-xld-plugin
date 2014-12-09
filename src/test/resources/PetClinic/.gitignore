@@ -1,4 +1,3 @@
 .gradle/
 build/
-build.tmp.dar/
-userHome.caches.modules-2/
+userHome/
