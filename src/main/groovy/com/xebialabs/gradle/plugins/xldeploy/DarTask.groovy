@@ -9,10 +9,14 @@ import org.gradle.api.tasks.bundling.AbstractArchiveTask
 import org.gradle.api.tasks.bundling.Jar
 import org.xml.sax.SAXException
 
-import static com.xebialabs.gradle.plugins.xldeploy.XlDeployPlugin.DAR_CONFIGURATION_NAME
+import java.text.SimpleDateFormat
 
+/**
+ * This task creates a DAR package with provided manifest and artifacts in it.
+ */
 class DarTask extends Jar {
 
+  public static final String DAR_CONFIGURATION_NAME = "dar"
   public static final String DAR_EXTENSION = 'dar'
 
   private def ext = project.extensions.getByName(XlDeployPlugin.PLUGIN_EXTENSION_NAME) as XlDeployPluginExtension
@@ -39,6 +43,9 @@ class DarTask extends Jar {
     def fw = new FileWriter(evaluatedManifest.manifest)
     fw.write(evaluatedManifest.resolvedManifestContent)
     fw.close()
+
+    addToCopySpec(true)
+
     super.copy()
   }
 
@@ -50,15 +57,21 @@ class DarTask extends Jar {
       from this.evaluatedManifest.manifest
     }
 
-    evaluatedManifest.artifactPathToCopyable.each { entryPath, object ->
-      def f = new File(entryPath)
-      def entryFolder = f.getParent() ?: ''
-      def entryFileName = f.getName()
+    addToCopySpec(false)
+  }
 
-      rootSpec.into(entryFolder) {
-        from resolveCopySource(object)
-        rename { ignored ->
-          entryFileName
+  protected void addToCopySpec(boolean dependencies) {
+    evaluatedManifest.artifactPathToCopyable.each { entryPath, object ->
+      if (object instanceof Dependency ^ !dependencies) {
+        def f = new File(entryPath)
+        def entryFolder = f.getParent() ?: ''
+        def entryFileName = f.getName()
+
+        rootSpec.into(entryFolder) {
+          from (dependencies ? resolveDependency(object as Dependency) : object)
+          rename { ignored ->
+            entryFileName
+          }
         }
       }
     }
@@ -119,22 +132,31 @@ class DarTask extends Jar {
         dependency: { Object o ->
           Dependency d = project.dependencies.add(DAR_CONFIGURATION_NAME, o)
           d
+        },
+
+        noSnapshot: { Object o ->
+          snapshotToTimestamp(o)
         }
     ]
   }
 
-  protected Object resolveCopySource(Object copySource) {
-    if (copySource instanceof Dependency) {
-      project.configurations.getByName(DAR_CONFIGURATION_NAME).getResolvedConfiguration()
-          .getFiles(new Spec<Dependency>() {
-        @Override
-        boolean isSatisfiedBy(Dependency element) {
-          return element == copySource
-        }
-      })
-    } else {
-      copySource
+  protected static String snapshotToTimestamp(Object o) {
+    String version = String.valueOf(o)
+    if (version.contains("SNAPSHOT")) {
+      SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd-HHmmss")
+      version = version.replace("SNAPSHOT", format.format(new Date()))
     }
+    version
+  }
+
+  protected Set<File> resolveDependency(Dependency dependency) {
+    project.configurations.getByName(DAR_CONFIGURATION_NAME).getResolvedConfiguration()
+        .getFiles(new Spec<Dependency>() {
+      @Override
+      boolean isSatisfiedBy(Dependency element) {
+        return element == dependency
+      }
+    })
   }
 
   protected EvaluatedCopySource evaluateCopySource(Object o) {

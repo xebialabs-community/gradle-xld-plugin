@@ -9,6 +9,7 @@ import org.junit.Before
 import org.junit.Test
 import org.xml.sax.SAXException
 
+import java.text.SimpleDateFormat
 import java.util.zip.ZipFile
 
 import static org.junit.Assert.fail
@@ -23,7 +24,7 @@ class DarTaskTest {
     project = ProjectBuilder.builder().withProjectDir(new File('src/test/resources/PetClinic')).build()
     project.apply plugin: 'war'
     project.apply plugin: XlDeployPlugin
-    project.version = "1.0-SNAPSHOT"
+    project.version = "1.0"
     project.dependencies {
       project.getRepositories().mavenCentral()
     }
@@ -33,13 +34,21 @@ class DarTaskTest {
   @Test
   public void projectVersionIsResolved() {
     def manifest = dar.analyzeManifest().resolvedManifestContent
-    assert manifest.contains('version="1.0-SNAPSHOT"')
+    assert manifest.contains('version="1.0"')
+  }
+
+  @Test
+  public void snapshotIsConvertedToTimestamp() {
+    project.version = "1.0-SNAPSHOT"
+    def date = new SimpleDateFormat("yyyyMMdd").format(new Date())
+    def manifest = dar.analyzeManifest().resolvedManifestContent
+    assert manifest =~ /version="1\.0-$date-\d\d\d\d\d\d"/
   }
 
   @Test
   public void archiveTaskOutputIsResolved() {
     def result = dar.analyzeManifest()
-    def expectedPath = 'artifacts/build/libs/test-1.0-SNAPSHOT.war'
+    def expectedPath = 'artifacts/build/libs/test-1.0.war'
     assert result.resolvedManifestContent.contains(
       "<jee.War name=\"PetClinic\" file=\"$expectedPath\" />")
     assert result.artifactPathToCopyable[expectedPath] instanceof War
@@ -49,7 +58,7 @@ class DarTaskTest {
   public void simpleFileIsResolved() {
     def result = dar.analyzeManifest()
     assert result.resolvedManifestContent.contains(
-      '<file.File name="file-1" file="artifacts/file.txt" />')
+      '<file.File name="file-1" file="artifacts/file.txt"')
     assert (result.artifactPathToCopyable['artifacts/file.txt'] as File).exists()
   }
 
@@ -58,7 +67,7 @@ class DarTaskTest {
     def result = dar.analyzeManifest()
     def expectedPath = "artifacts/mysql/mysql-connector-java-2.0.14.jar"
     assert result.resolvedManifestContent.contains(
-        "<file.Archive name=\"mysqlDriver\" file=\"$expectedPath\" />")
+        "<file.Archive name=\"mysqlDriver\" file=\"$expectedPath\"")
     assert result.artifactPathToCopyable.get(expectedPath) instanceof Dependency
   }
 
@@ -85,7 +94,7 @@ class DarTaskTest {
     dar.destinationDir.mkdirs()
     dar.doAfterEvaluate()
     dar.copy()
-    File zipFile = new File(dar.destinationDir, 'test-1.0-SNAPSHOT.dar')
+    File zipFile = new File(dar.destinationDir, 'test-1.0.dar')
     assert zipFile.exists()
     ZipFile zip = new ZipFile(zipFile)
     assert zip.getEntry('artifacts/file.txt') != null

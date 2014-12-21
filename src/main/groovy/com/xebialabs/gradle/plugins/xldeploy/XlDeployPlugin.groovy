@@ -12,7 +12,7 @@ class XlDeployPlugin implements Plugin<Project> {
   private static final Logger log = LoggerFactory.getLogger(XlDeployPlugin.class)
 
   public static final String DAR_TASK_NAME = "dar"
-  public static final String DAR_CONFIGURATION_NAME = "dar"
+  public static final String DEPLOY_TASK_NAME = "deploy"
 
   public static final String PLUGIN_EXTENSION_NAME = "xldeploy"
 
@@ -28,16 +28,28 @@ class XlDeployPlugin implements Plugin<Project> {
       group = BasePlugin.BUILD_GROUP
       description = "Create a DAR package"
     }
-
     ArchivePublishArtifact darArtifact = new ArchivePublishArtifact(dar)
-    project.configurations.create(DAR_CONFIGURATION_NAME).artifacts.add(darArtifact)
+    project.configurations.create(DarTask.DAR_CONFIGURATION_NAME).artifacts.add(darArtifact)
+
+    DeployTask deploy = project.tasks.create(DEPLOY_TASK_NAME, DeployTask.class)
+    deploy.configure {
+      group = BasePlugin.UPLOAD_GROUP
+      description = "Upload DAR package to XL Deploy and run a deployment to an environment"
+      dependsOn dar
+    }
   }
 
-  static def addExtensions(Project p) {
-    p.extensions.create(PLUGIN_EXTENSION_NAME, XlDeployPluginExtension.class).with {
+  private static def addExtensions(Project p) {
+    def ext = p.extensions.create(PLUGIN_EXTENSION_NAME, XlDeployPluginExtension.class).with {
       project = p
       manifest = p.file("${project.projectDir}/src/main/dar/deployit-manifest.xml")
+
+      xldUrl = "http://localhost:4516/"
       it
+    }
+    p.afterEvaluate {
+      ext.xldUsername = ext.xldUsername ?: p.properties.get('xldUsername')
+      ext.xldPassword = ext.xldPassword ?: p.properties.get('xldPassword')
     }
   }
 

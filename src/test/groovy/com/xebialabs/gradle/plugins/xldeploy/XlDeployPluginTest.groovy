@@ -15,12 +15,13 @@ class XlDeployPluginTest {
   @Before
   public void before() {
     project = ProjectBuilder.builder().build()
-    project.apply plugin: 'com.xebialabs.xl-deploy'
+    project.apply plugin: XlDeployPlugin
   }
 
   @Test
-  public void darTaskIsAdded() {
+  public void tasksAreAdded() {
     assertTrue(project.tasks.dar instanceof DarTask)
+    assertTrue(project.tasks.deploy instanceof DeployTask)
   }
 
   @Test

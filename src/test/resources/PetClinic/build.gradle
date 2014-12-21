@@ -1,0 +1,42 @@
+apply plugin: 'war'
+apply plugin: 'com.xebialabs.xl-deploy'
+
+version = "1.0-SNAPSHOT"
+
+repositories {
+  mavenCentral()
+}
+
+xldeploy {
+  xldUsername = "admin"
+  xldPassword = "admin"
+}
+
+tasks.deploy.configure {
+  environmentId = "Environments/local"
+}
+
+// Below config should not be necessary in a real project
+buildscript {
+  repositories {
+    mavenLocal()
+    maven {
+      url "$nexusBaseUrl/repositories/public"
+      credentials {
+        username nexusUserName
+        password nexusPassword
+      }
+    }
+    maven {
+      url "$nexusBaseUrl/repositories/releases"
+      credentials {
+        username nexusUserName
+        password nexusPassword
+      }
+    }
+  }
+  dependencies {
+    classpath fileTree(dir: '../../../../build/libs', includes: ['*.jar'])
+    classpath "com.xebialabs.deployit.engine:remote-booter:2014.10-alpha-33"
+  }
+}

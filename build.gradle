@@ -5,6 +5,26 @@ version = '0.1-SNAPSHOT'
 dependencies {
   compile gradleApi()
   compile localGroovy()
+
+  compile "com.xebialabs.deployit.engine:remote-booter:2014.10-alpha-33"
+}
+
+repositories {
+  mavenLocal()
+  maven {
+    url "$nexusBaseUrl/repositories/public"
+    credentials {
+      username nexusUserName
+      password nexusPassword
+    }
+  }
+  maven {
+    url "$nexusBaseUrl/repositories/releases"
+    credentials {
+      username nexusUserName
+      password nexusPassword
+    }
+  }
 }
 
 clean.doLast {
