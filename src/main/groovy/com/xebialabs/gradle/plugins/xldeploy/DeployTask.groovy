@@ -29,14 +29,34 @@ class DeployTask extends BaseDeploymentTask {
   public void executeDeployment() {
     try {
       boot()
-      deploy()
+      final ConfigurationItem deploymentPackage = uploadPackage();
+      if (Strings.emptyToNull(environmentId) != null) {
+        deployPackage(deploymentPackage)
+      } else {
+        logger.debug("No environmentId is specified for $DEPLOY_TASK_NAME so skipping deployment")
+      }
     } finally {
       shutdown()
     }
   }
 
-  private void deploy() {
-    final ConfigurationItem deploymentPackage = uploadPackage();
+  private ConfigurationItem uploadPackage() {
+
+    def darFiles = project.configurations.getByName(DarTask.DAR_CONFIGURATION_NAME).getAllArtifacts()
+    if (darFiles.isEmpty()) {
+      throw new ProjectBuildFailureException("Could not find any generated DAR packages in the project. Did the 'dar' task run?", null)
+    }
+    if (darFiles.size() > 1) {
+      throw new ProjectBuildFailureException("Found more than one DAR packages generated in project ${project.name}: $darFiles.", null)
+    }
+    def darFile = darFiles.files.getSingleFile()
+
+    final ConfigurationItem deploymentPackage = getDeploymentHelper().uploadPackage(darFile);
+    logger.info("Application [${deploymentPackage.getId()}] has been imported");
+    return deploymentPackage;
+  }
+
+  private void deployPackage(ConfigurationItem deploymentPackage) {
     final ConfigurationItem targetEnvironment = getTargetEnvironment();
 
     Boolean update = getDeploymentHelper().isApplicationDeployed(deploymentPackage.getId(), targetEnvironment.getId());
@@ -69,22 +89,6 @@ class DeployTask extends BaseDeploymentTask {
         logger.error("Cannot delete $currentVersion: ${e.getMessage()}", e);
       }
     }
-  }
-
-  private ConfigurationItem uploadPackage() {
-
-    def darFiles = project.configurations.getByName(DarTask.DAR_CONFIGURATION_NAME).getAllArtifacts()
-    if (darFiles.isEmpty()) {
-      throw new ProjectBuildFailureException("Could not find any generated DAR packages in the project. Did the 'dar' task run?", null)
-    }
-    if (darFiles.size() > 1) {
-      throw new ProjectBuildFailureException("Found more than one DAR packages generated in project ${project.name}: $darFiles.", null)
-    }
-    def darFile = darFiles.files.getSingleFile()
-
-    final ConfigurationItem deploymentPackage = getDeploymentHelper().uploadPackage(darFile);
-    logger.info("Application [${deploymentPackage.getId()}] has been imported");
-    return deploymentPackage;
   }
 
   private ConfigurationItem getTargetEnvironment() {
