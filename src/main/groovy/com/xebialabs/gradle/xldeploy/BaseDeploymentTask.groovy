@@ -1,4 +1,4 @@
-package com.xebialabs.gradle.plugins.xldeploy
+package com.xebialabs.gradle.xldeploy
 
 import com.xebialabs.deployit.booter.remote.BooterConfig
 import com.xebialabs.deployit.booter.remote.DeployitCommunicator
@@ -6,7 +6,7 @@ import com.xebialabs.deployit.booter.remote.RemoteBooter
 import org.gradle.api.DefaultTask
 import org.gradle.api.ProjectConfigurationException
 
-import static com.xebialabs.gradle.plugins.xldeploy.XlDeployPlugin.PLUGIN_EXTENSION_NAME
+import static XlDeployPlugin.PLUGIN_EXTENSION_NAME
 
 abstract class BaseDeploymentTask extends DefaultTask {
 

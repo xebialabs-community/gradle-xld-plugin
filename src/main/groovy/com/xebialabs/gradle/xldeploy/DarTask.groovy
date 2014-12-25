@@ -1,4 +1,4 @@
-package com.xebialabs.gradle.plugins.xldeploy
+package com.xebialabs.gradle.xldeploy
 
 import groovy.text.SimpleTemplateEngine
 import org.gradle.api.ProjectConfigurationException

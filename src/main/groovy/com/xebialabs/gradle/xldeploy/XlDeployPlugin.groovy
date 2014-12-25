@@ -1,4 +1,4 @@
-package com.xebialabs.gradle.plugins.xldeploy
+package com.xebialabs.gradle.xldeploy
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project

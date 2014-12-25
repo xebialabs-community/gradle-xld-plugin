@@ -1,4 +1,4 @@
-package com.xebialabs.gradle.plugins.xldeploy
+package com.xebialabs.gradle.xldeploy
 
 import com.google.common.base.Joiner
 import com.google.common.base.Splitter
@@ -14,7 +14,7 @@ import org.gradle.api.ProjectConfigurationException
 import org.gradle.api.tasks.TaskAction
 import org.gradle.mvn3.org.apache.maven.ProjectBuildFailureException
 
-import static com.xebialabs.gradle.plugins.xldeploy.XlDeployPlugin.DEPLOY_TASK_NAME
+import static XlDeployPlugin.DEPLOY_TASK_NAME
 
 /**
  * This task uploads a DAR package to XL Deploy and can run a deployment

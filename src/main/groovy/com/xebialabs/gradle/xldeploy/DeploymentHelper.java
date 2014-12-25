@@ -1,4 +1,4 @@
-package com.xebialabs.gradle.plugins.xldeploy;
+package com.xebialabs.gradle.xldeploy;
 
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
