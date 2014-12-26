@@ -3,9 +3,10 @@ package com.xebialabs.gradle.xldeploy;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
-import com.google.common.collect.DiscreteDomains;
+import com.google.common.collect.ContiguousSet;
+import com.google.common.collect.DiscreteDomain;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Ranges;
+import com.google.common.collect.Range;
 import com.xebialabs.deployit.booter.remote.DeployitCommunicator;
 import com.xebialabs.deployit.booter.remote.Proxies;
 import com.xebialabs.deployit.booter.remote.client.DeployitRemoteClient;
@@ -65,7 +66,8 @@ public class DeploymentHelper {
      */
     public void skipAllSteps(String taskId) {
         TaskService taskService = proxies.getTaskService();
-        taskService.skip(taskId, Lists.newArrayList(Ranges.open(0, taskService.getTask(taskId).getNrSteps() + 1).asSet(DiscreteDomains.integers())));
+        taskService.skip(taskId, Lists.newArrayList(ContiguousSet.create(
+                Range.open(0, taskService.getTask(taskId).getNrSteps() + 1), DiscreteDomain.integers())));
     }
 
     /**
