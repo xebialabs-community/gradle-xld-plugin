@@ -24,7 +24,7 @@ The plugin is available at [Bintray's JCenter repository](https://bintray.com/bi
             jcenter()
         }
         dependencies {
-            classpath 'com.xebialabs.gradle.plugins:xldeploy:0.1'
+            classpath 'com.xebialabs.gradle.plugins:xldeploy:0.2.0'
         }
     }
 

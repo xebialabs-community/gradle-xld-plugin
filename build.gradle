@@ -5,11 +5,21 @@ apply plugin: 'com.jfrog.bintray'
 dependencies {
   compile gradleApi()
   compile localGroovy()
-  compile "com.xebialabs.deployit.engine:remote-booter:2014.10-alpha-33"
+  compile "com.xebialabs.deployit.engine:remote-booter:2014.10"
 }
 
 clean.doLast {
   project.delete 'src/test/resources/PetClinic/build'
+}
+
+task sourcesJar(type: Jar) {
+  from sourceSets.main.allSource
+  classifier = 'sources'
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+  classifier = 'javadoc'
+  from javadoc.destinationDir
 }
 
 def pomConfig = {
@@ -27,6 +37,8 @@ publishing {
   publications {
     gradlePlugin(MavenPublication) {
       from components.java
+      artifact sourcesJar
+      artifact javadocJar
 
       groupId project_group_id
       artifactId project_artifact_id
