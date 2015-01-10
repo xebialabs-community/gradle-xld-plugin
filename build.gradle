@@ -71,6 +71,7 @@ bintray {
     publicDownloadNumbers = true
     version {
       attributes = ['gradle-plugin': "com.xebialabs.xl-deploy:$project_group_id:$project_artifact_id"]
+      vcsTag = "$project_name-${project.version}"
     }
   }
 }
