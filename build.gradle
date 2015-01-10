@@ -1,6 +1,7 @@
 apply plugin: 'groovy'
 apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
+apply plugin: 'com.github.hierynomus.license'
 
 dependencies {
   compile gradleApi()
@@ -76,6 +77,13 @@ bintray {
   }
 }
 
+license {
+  header rootProject.file('src/main/license/xebialabs_community.license')
+  strictCheck true
+  exclude "**/*.txt"
+  excludes(["src/test/resources/PetClinic/.gradle/**", "src/test/resources/PetClinic/userHome/**"])
+}
+
 repositories {
   mavenLocal()
   maven {
@@ -100,5 +108,6 @@ buildscript {
   }
   dependencies {
     classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.0'
+    classpath "nl.javadude.gradle.plugins:license-gradle-plugin:0.11.0"
   }
 }
