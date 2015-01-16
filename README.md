@@ -1,4 +1,4 @@
-# Gradle XL Deploy Plugin
+# Gradle XL Deploy Plugin [draft, not usable yet]
 
 This is a [Gradle](http://gradle.org) plugin which allows you to deploy your application to an environment as a part of the build process. It uses [XL Deploy](http://xebialabs.com/products/xl-deploy/) server to perform the deployment.
 
