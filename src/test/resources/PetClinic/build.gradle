@@ -1,7 +1,6 @@
 buildscript {
   repositories {
     jcenter()
-    mavenCentral()
     maven {
       url "http://www.knopflerfish.org/maven2/"
     }
