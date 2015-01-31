@@ -17,7 +17,7 @@ Environment and deployables configuration needs to be done once, and then the wh
 
 # Installation
 
-The plugin is available at [Bintray's JCenter repository](https://bintray.com/bintray/jcenter) and [Gradle Plugins repository](http://plugins.gradle.org/), with some dependencies available in public XebiaLabs Maven repository. You can add the plugin to your `build.gradle` using following code snippet:
+The plugin is available at [Bintray's JCenter repository](https://bintray.com/bintray/jcenter) and [Gradle Plugins repository](http://plugins.gradle.org/plugin/com.xebialabs.xl-deploy/0.2.0), with some dependencies available in public XebiaLabs Maven repository. You can add the plugin to your `build.gradle` using following code snippet:
 
     buildscript {
       repositories {
