@@ -1,6 +1,5 @@
 buildscript {
   repositories {
-    mavenLocal()
     jcenter()
     mavenCentral()
     maven {
@@ -11,7 +10,7 @@ buildscript {
     }
   }
   dependencies {
-    classpath 'com.xebialabs.gradle:xl-deploy-gradle-plugin:0.1.2'
+    classpath 'com.xebialabs.gradle:xl-deploy-gradle-plugin:0.2.0'
   }
 }
 
