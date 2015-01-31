@@ -125,4 +125,4 @@ Here is the list of configurable properties of the `deploy` task:
 
 # Feedback
 
-If you find any issues with the `gradle-xld-plugin`, please post them in [GitHub issues page](https://github.com/xebialabs-community/gradle-xld-plugin/issues).
+If you find any issues with the `gradle-xld-plugin`, please create a [GitHub issue](https://github.com/xebialabs-community/gradle-xld-plugin/issues).
