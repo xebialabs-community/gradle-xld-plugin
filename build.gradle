@@ -6,7 +6,7 @@ apply plugin: 'com.github.hierynomus.license'
 dependencies {
   compile gradleApi()
   compile localGroovy()
-  compile "com.xebialabs.deployit.engine:remote-booter:2014.10"
+  compile "com.xebialabs.deployit.engine:remote-booter:2015.1"
 }
 
 clean.doLast {
@@ -83,22 +83,19 @@ license {
   exclude "**/*.txt"
   excludes(["src/test/resources/PetClinic/.gradle/**", "src/test/resources/PetClinic/userHome/**"])
 }
+// workaround for a bug in license plugin
+tasks.licenseTest.doFirst {
+  delete 'src/test/resources/PetClinic/userHome/caches/modules-2/'
+}
 
 repositories {
   mavenLocal()
+  mavenCentral()
   maven {
-    url "$nexusBaseUrl/repositories/public"
-    credentials {
-      username nexusUserName
-      password nexusPassword
-    }
+    url "http://www.knopflerfish.org/maven2/"
   }
   maven {
-    url "$nexusBaseUrl/repositories/releases"
-    credentials {
-      username nexusUserName
-      password nexusPassword
-    }
+    url "https://dist.xebialabs.com/public/maven2/"
   }
 }
 

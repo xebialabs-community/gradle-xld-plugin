@@ -17,14 +17,21 @@ Environment and deployables configuration needs to be done once, and then the wh
 
 # Installation
 
-The plugin is available at [Bintray's JCenter repository](https://bintray.com/bintray/jcenter) so you can add it to your `build.gradle` using following code snippet:
+The plugin is available at [Bintray's JCenter repository](https://bintray.com/bintray/jcenter) with some dependencies available in public XebiaLabs Maven repository. You can add the plugin to your `build.gradle` using following code snippet:
 
     buildscript {
         repositories {
             jcenter()
+            mavenCentral()
+            maven {
+                url "http://www.knopflerfish.org/maven2/"
+            }
+            maven {
+                url "https://dist.xebialabs.com/public/maven2/"
+            }
         }
         dependencies {
-            classpath 'com.xebialabs.gradle.plugins:xldeploy:0.2.0'
+            classpath 'com.xebialabs.gradle:xl-deploy-gradle-plugin:0.2.0'
         }
     }
 

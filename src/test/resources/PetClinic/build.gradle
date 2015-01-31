@@ -1,3 +1,20 @@
+buildscript {
+  repositories {
+    mavenLocal()
+    jcenter()
+    mavenCentral()
+    maven {
+      url "http://www.knopflerfish.org/maven2/"
+    }
+    maven {
+      url "https://dist.xebialabs.com/public/maven2/"
+    }
+  }
+  dependencies {
+    classpath 'com.xebialabs.gradle:xl-deploy-gradle-plugin:0.1.2'
+  }
+}
+
 apply plugin: 'war'
 apply plugin: 'com.xebialabs.xl-deploy'
 
@@ -16,27 +33,21 @@ tasks.deploy.configure {
   environmentId = "Environments/local"
 }
 
-// Below config should not be necessary in a real project
-buildscript {
-  repositories {
-    mavenLocal()
-    maven {
-      url "$nexusBaseUrl/repositories/public"
-      credentials {
-        username nexusUserName
-        password nexusPassword
-      }
-    }
-    maven {
-      url "$nexusBaseUrl/repositories/releases"
-      credentials {
-        username nexusUserName
-        password nexusPassword
-      }
-    }
-  }
-  dependencies {
-    classpath fileTree(dir: '../../../../build/libs', includes: ['*.jar'])
-    classpath "com.xebialabs.deployit.engine:remote-booter:2014.10-alpha-33"
-  }
-}
+// Below config lets you use development version of the plugin
+//buildscript {
+//  repositories {
+//    mavenLocal()
+//    jcenter()
+//    mavenCentral()
+//    maven {
+//      url "http://www.knopflerfish.org/maven2/"
+//    }
+//    maven {
+//      url "https://dist.xebialabs.com/public/maven2/"
+//    }
+//  }
+//  dependencies {
+//    classpath fileTree(dir: '../../../../build/libs', includes: ['*.jar'])
+//    classpath "com.xebialabs.deployit.engine:remote-booter:2015.1"
+//  }
+//}
