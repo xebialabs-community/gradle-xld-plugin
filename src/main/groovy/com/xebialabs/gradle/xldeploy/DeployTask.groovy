@@ -167,9 +167,9 @@ class DeployTask extends BaseDeploymentTask {
   }
 
   private static String getDeployedApplicationId(String source, String target) {
-    // source = 'Applications/tomcatApps/deployit-petclinic-tomcat/1.0-20120522-173607'
+    // source = 'Applications/tomcatApps/deployit-tomcat/1.0-20120522-173607'
     // target = "Environments/DefaultEnvironment"
-    // return "Environments/DefaultEnvironment/deployit-petclinic-tomcat"
+    // return "Environments/DefaultEnvironment/deployit-tomcat"
     List<String> splitSource =  Lists.newArrayList(Splitter.on("/").split(source));
     final String appName = splitSource.get(splitSource.size() - 2);
     return Joiner.on("/").join(target, appName);

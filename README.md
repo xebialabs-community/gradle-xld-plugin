@@ -60,9 +60,9 @@ Here is an example manifest file:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<udm.DeploymentPackage version="${noSnapshot(project.version)}" application="PetClinic">
+<udm.DeploymentPackage version="${noSnapshot(project.version)}" application="HelloDeployment">
   <deployables>
-    <jee.War name="PetClinic" file="${artifact(project.war)}" />
+    <jee.War name="HelloDeployment" file="${artifact(project.war)}" />
     <file.File name="config-file" file="${artifact(project.file('my-config.xml'))}">
       <targetPath>/tmp/</targetPath>
     </file.File>

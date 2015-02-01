@@ -1,3 +1,6 @@
+apply plugin: 'war'
+apply plugin: 'com.xebialabs.xl-deploy'
+
 buildscript {
   repositories {
     jcenter()
@@ -12,9 +15,6 @@ buildscript {
     classpath 'com.xebialabs.gradle:xl-deploy-gradle-plugin:0.2.0'
   }
 }
-
-apply plugin: 'war'
-apply plugin: 'com.xebialabs.xl-deploy'
 
 version = "1.0-SNAPSHOT"
 

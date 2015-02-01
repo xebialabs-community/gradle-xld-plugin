@@ -6,5 +6,5 @@
     FOR A PARTICULAR PURPOSE. THIS CODE AND INFORMATION ARE NOT SUPPORTED BY XEBIALABS.
 
 -->
-<udm.DeploymentPackage version="${project.version}" application="PetClinic">
+<udm.DeploymentPackage version="${project.version}" application="HelloDeployment">
 <udm.DeploymentPackage>

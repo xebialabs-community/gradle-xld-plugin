@@ -10,7 +10,7 @@ dependencies {
 }
 
 clean.doLast {
-  project.delete 'src/test/resources/PetClinic/build'
+  project.delete 'src/test/resources/HelloDeployment/build'
 }
 
 task sourcesJar(type: Jar) {
@@ -81,11 +81,11 @@ license {
   header rootProject.file('src/main/license/xebialabs_community.license')
   strictCheck true
   exclude "**/*.txt"
-  excludes(["src/test/resources/PetClinic/.gradle/**", "src/test/resources/PetClinic/userHome/**"])
+  excludes(["src/test/resources/HelloDeployment/.gradle/**", "src/test/resources/HelloDeployment/userHome/**"])
 }
 // workaround for a bug in license plugin
 tasks.licenseTest.doFirst {
-  delete 'src/test/resources/PetClinic/userHome/caches/modules-2/'
+  delete 'src/test/resources/HelloDeployment/userHome/caches/modules-2/'
 }
 
 repositories {

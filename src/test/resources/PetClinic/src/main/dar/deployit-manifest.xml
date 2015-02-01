@@ -6,12 +6,12 @@
     FOR A PARTICULAR PURPOSE. THIS CODE AND INFORMATION ARE NOT SUPPORTED BY XEBIALABS.
 
 -->
-<udm.DeploymentPackage version="${noSnapshot(project.version)}" application="PetClinic">
+<udm.DeploymentPackage version="${noSnapshot(project.version)}" application="HelloDeployment">
   <deployables>
     <cmd.Command name="test-command">
       <commandLine>echo "test"</commandLine>
     </cmd.Command>
-    <jee.War name="PetClinic" file="${artifact(project.war)}" />
+    <jee.War name="HelloDeployment" file="${artifact(project.war)}" />
     <file.File name="file-1" file="${artifact(project.file('file.txt'))}">
       <targetPath>/tmp/</targetPath>
     </file.File>

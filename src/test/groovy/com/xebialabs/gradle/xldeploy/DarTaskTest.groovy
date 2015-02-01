@@ -26,7 +26,7 @@ class DarTaskTest {
 
   @Before
   public void before() {
-    project = ProjectBuilder.builder().withProjectDir(new File('src/test/resources/PetClinic')).build()
+    project = ProjectBuilder.builder().withProjectDir(new File('src/test/resources/HelloDeployment')).build()
     project.apply plugin: 'war'
     project.apply plugin: XlDeployPlugin
     project.version = "1.0"
@@ -55,7 +55,7 @@ class DarTaskTest {
     def result = dar.analyzeManifest()
     def expectedPath = 'artifacts/build/libs/test-1.0.war'
     assert result.resolvedManifestContent.contains(
-      "<jee.War name=\"PetClinic\" file=\"$expectedPath\" />")
+      "<jee.War name=\"HelloDeployment\" file=\"$expectedPath\" />")
     assert result.artifactPathToCopyable[expectedPath] instanceof War
   }
 
