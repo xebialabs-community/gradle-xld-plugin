@@ -1,5 +1,7 @@
 # Gradle XL Deploy Plugin
 
+[![Build Status](https://travis-ci.org/xebialabs-community/gradle-xld-plugin.svg?branch=master)](https://travis-ci.org/xebialabs-community/gradle-xld-plugin)
+
 This is a [Gradle](http://gradle.org) plugin which allows you to deploy your application to an environment as a part of the build process. It uses [XL Deploy](http://xebialabs.com/products/xl-deploy/) server to perform the deployment.
 
 This plugin can be handy to easily and often deploy your application to a development environment. Another way to use it would be as part of Gradle release process, so that final non-SNAPSHOT artifacts can be automatically put to your acceptance or production environment (probably for small projects). If you have a CI server, you might use corresponding XL Deploy plugin instead to do deployments, see for example [Jenkins plugin](https://wiki.jenkins-ci.org/display/JENKINS/XL+Deploy+Plugin).
