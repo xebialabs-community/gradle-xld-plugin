@@ -73,7 +73,8 @@ abstract class BaseDeploymentTask extends DefaultTask {
           failIfEmpty(xldExtension.xldUsername, 'xldUsername'),
           failIfEmpty(xldExtension.xldPassword, 'xldPassword'))
           .withHost(url.getHost())
-          .withPort(url.getPort() != -1 ? url.getPort() : 80)
+          .withPort(url.getPort() != -1 ? url.getPort() : url.getDefaultPort())
+          .withContext(url.getPath())
           .build();
 
       communicator = RemoteBooter.boot(config);
