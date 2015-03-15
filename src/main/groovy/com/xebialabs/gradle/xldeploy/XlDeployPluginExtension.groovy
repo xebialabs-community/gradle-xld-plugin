@@ -31,4 +31,9 @@ class XlDeployPluginExtension {
    */
   String xldPassword
 
+  /**
+   * Environment ID to deploy to.
+   */
+  String xldEnvironmentId
+
 }

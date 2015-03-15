@@ -55,6 +55,9 @@ class XlDeployPlugin implements Plugin<Project> {
     p.afterEvaluate {
       ext.xldUsername = ext.xldUsername ?: p.properties.get('xldUsername')
       ext.xldPassword = ext.xldPassword ?: p.properties.get('xldPassword')
+      if (p.hasProperty('xldEnvironmentId')) {
+        ext.xldEnvironmentId = ext.xldEnvironmentId ?: p.properties.get('xldEnvironmentId')
+      }
     }
   }
 

@@ -19,7 +19,24 @@ Environment and deployables configuration needs to be done once, and then the wh
 
 # Installation
 
-The plugin is available at [Bintray's JCenter repository](https://bintray.com/bintray/jcenter) and [Gradle Plugins repository](http://plugins.gradle.org/plugin/com.xebialabs.xl-deploy/0.2.0), with some dependencies available in public XebiaLabs Maven repository. You can add the plugin to your `build.gradle` using following code snippet:
+The plugin is available at [Bintray's JCenter repository](https://bintray.com/bintray/jcenter) and [Gradle Plugins repository](http://plugins.gradle.org/plugin/com.xebialabs.xl-deploy/0.2.0), with some dependencies available in public XebiaLabs Maven repository. You can add the plugin to your `build.gradle` using following code snippet on Gradle 2.1 and higher:
+
+    buildscript {
+      repositories {
+        jcenter()
+        maven {
+          url "http://www.knopflerfish.org/maven2/"
+        }
+        maven {
+          url "https://dist.xebialabs.com/public/maven2/"
+        }
+      }
+    }
+    plugins {
+      id "com.xebialabs.xl-deploy" version "0.2.1"
+    }
+
+Or this on Gradle 2.0 or lower:
 
     buildscript {
       repositories {
@@ -32,7 +49,7 @@ The plugin is available at [Bintray's JCenter repository](https://bintray.com/bi
         }
       }
       dependencies {
-        classpath 'com.xebialabs.gradle:xl-deploy-gradle-plugin:0.2.0'
+        classpath 'com.xebialabs.gradle:xl-deploy-gradle-plugin:0.2.1'
       }
     }
 
@@ -99,25 +116,20 @@ The `deployment-manifest.xml` file in your project is treated as a template, so 
 1. uploads the generated .dar file to the XL Deploy server;
 2. optionally runs a deployment job in XL Deploy to install your application to an environment.
 
-To run the task you first need to configure general connection details:
+You can configure the task using `xldeploy` extension:
 
     xldeploy {
       xldUrl = "http://localhost:4516/"
       xldUsername = "admin"
       xldPassword = "admin"
+      xldEnvironmentId = "Environments/local"
     }
 
-The `xldUrl` is http://localhost:4516/ by default. `xldUsername` and `xldPassword` can be also configured in your `~/.gradle/gradle.properties` file instead of `build.gradle`, so that you don't have to store credentials in source files.
-
-The details of deployment task are configured as task properties:
-
-    tasks.deploy.configure {
-      environmentId = "Environments/local"
-    }
+The `xldUrl` is http://localhost:4516/ by default. `xldUsername` and `xldPassword` can be also configured in your `~/.gradle/gradle.properties` file instead of `build.gradle`, so that you don't have to store credentials in source files. `xldEnvironmentId` is the name of environment to which to deploy.
 
 Here is the list of configurable properties of the `deploy` task:
 
-* `environmentId` - the ID of the environment configured in XL Deploy where you want your application to be deployed. If the `environmentId` is not specified then the task does not perform deployment and only uploads the DAR package.
+* `environmentId` - the ID of the environment configured in XL Deploy where you want your application to be deployed. If the `environmentId` is not specified it is looked up in the `xldEnvironmentId` extension property. If it is missing then the task does not perform deployment and only uploads the DAR package.
 * `skipMode` - activate the skip mode: generate the plan, skip all the steps, validate the task. `false` by default.
 * `orchestrator` - sets the orchestrator used during the deployment.
 * `testMode` - activates the test mode: generates the plan, displays all the steps and validates the task but does not run it. `false` by default.

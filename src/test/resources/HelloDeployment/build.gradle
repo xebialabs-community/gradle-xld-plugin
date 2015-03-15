@@ -7,10 +7,7 @@ xldeploy {
   xldUrl = "http://localhost:4516/"
   xldUsername = "admin"
   xldPassword = "admin"
-}
-
-tasks.deploy.configure {
-  environmentId = "Environments/local"
+  xldEnvironmentId = "Environments/local"
 }
 
 repositories {

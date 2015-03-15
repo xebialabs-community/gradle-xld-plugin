@@ -35,6 +35,7 @@ class DeployTask extends BaseDeploymentTask {
     try {
       boot()
       final ConfigurationItem deploymentPackage = uploadPackage();
+      environmentId = environmentId ?: xldExtension.xldEnvironmentId
       if (Strings.emptyToNull(environmentId) != null) {
         deployPackage(deploymentPackage)
       } else {
