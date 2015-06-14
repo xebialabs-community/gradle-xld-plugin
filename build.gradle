@@ -1,10 +1,9 @@
 plugins {
+  id "com.gradle.plugin-publish" version "0.9.0"
   id "com.github.hierynomus.license" version "0.11.0"
-  id "com.jfrog.bintray" version "1.0"
 }
 
 apply plugin: 'groovy'
-apply plugin: 'maven-publish'
 
 dependencies {
   compile gradleApi()
@@ -26,57 +25,22 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
   from javadoc.destinationDir
 }
 
-def pomConfig = {
-  name 'XL Deploy Gradle Plugin'
-  url project_url
-  scm { url project_scm }
+pluginBundle {
+  website = project_url
+  vcsUrl = project_scm
+  description = project_description
+  tags = ['deployment', 'deploy', 'xldeploy', 'cd', 'continuous delivery']
 
-  organization {
-    name 'XebiaLabs'
-    url 'http://www.xebialabs.com'
-  }
-}
-
-publishing {
-  publications {
-    gradlePlugin(MavenPublication) {
-      from components.java
-      artifact sourcesJar
-      artifact javadocJar
-
-      groupId project_group_id
-      artifactId project_artifact_id
-
-      pom.withXml {
-        asNode().appendNode('description', project_description)
-        asNode().children().last() + pomConfig
-      }
+  plugins {
+    xlDeployPlugin {
+      id = 'com.xebialabs.xl-deploy'
+      displayName = 'Gradle XL Deploy plugin'
     }
   }
-}
 
-bintray {
-  user = bintrayUsername
-  key = bintrayApiKey
-
-  publications = ['gradlePlugin']
-  dryRun = false
-  publish = false
-  pkg {
-    repo = 'maven'
-    userOrg = 'xebialabs'
-    name = project_artifact_id
-    desc = project_description
-    websiteUrl = project_url
-    issueTrackerUrl = project_issues_url
-    vcsUrl = project_scm
-    licenses = ['Apache-2.0']
-    labels = ['deployment', 'deploy', 'xldeploy', 'cd', 'continuous delivery', 'gradle']
-    publicDownloadNumbers = true
-    version {
-      attributes = ['gradle-plugin': "com.xebialabs.xl-deploy:$project_group_id:$project_artifact_id"]
-      vcsTag = "$project_name-${project.version}"
-    }
+  mavenCoordinates {
+    groupId = project_group_id
+    artifactId = project_artifact_id
   }
 }
 

@@ -33,9 +33,7 @@ buildscript {
 // Below config lets you use development version of the plugin
 //buildscript {
 //  repositories {
-//    mavenLocal()
 //    jcenter()
-//    mavenCentral()
 //    maven {
 //      url "http://www.knopflerfish.org/maven2/"
 //    }
