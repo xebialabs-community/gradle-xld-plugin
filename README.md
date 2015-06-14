@@ -19,7 +19,7 @@ Environment and deployables configuration needs to be done once, and then the wh
 
 # Installation
 
-The plugin is available at [Bintray's JCenter repository](https://bintray.com/bintray/jcenter) and [Gradle Plugins repository](http://plugins.gradle.org/plugin/com.xebialabs.xl-deploy/0.2.0), with some dependencies available in public XebiaLabs Maven repository. You can add the plugin to your `build.gradle` using following code snippet on Gradle 2.1 and higher:
+The plugin is available at [Gradle Plugins repository](https://plugins.gradle.org/plugin/com.xebialabs.xl-deploy), with some dependencies available in public XebiaLabs Maven repository. You can add the plugin to your `build.gradle` using following code snippet on Gradle 2.1 and higher:
 
     buildscript {
       repositories {
@@ -33,7 +33,7 @@ The plugin is available at [Bintray's JCenter repository](https://bintray.com/bi
       }
     }
     plugins {
-      id "com.xebialabs.xl-deploy" version "0.2.1"
+      id "com.xebialabs.xl-deploy" version "0.2.2"
     }
 
 Or this on Gradle 2.0 or lower:
@@ -49,7 +49,7 @@ Or this on Gradle 2.0 or lower:
         }
       }
       dependencies {
-        classpath 'com.xebialabs.gradle:xl-deploy-gradle-plugin:0.2.1'
+        classpath 'com.xebialabs.gradle:xl-deploy-gradle-plugin:0.2.2'
       }
     }
 
@@ -140,3 +140,17 @@ Here is the list of configurable properties of the `deploy` task:
 # Feedback
 
 If you find any issues with the `gradle-xld-plugin`, please create a [GitHub issue](https://github.com/xebialabs-community/gradle-xld-plugin/issues).
+
+# Development
+
+## Releasing ##
+
+To manage versions this project uses the [nebula-release-plugin](https://github.com/nebula-plugins/nebula-release-plugin), which in turn uses [gradle-git plugin](https://github.com/ajoberstar/gradle-git). So you can release a new version if this project using following commands:
+
+* to release a new patch: `./gradlew final -Prelease.scope=patch`
+* to release a new minor release: `./gradlew final`
+* to release a new major release: `./gradlew final -Prelease.scope=major`
+
+By default when you build the project it builds a snapshot version of next (to be released) minor release. You can get rid of `-SNAPSHOT` in the version by adding command-line parameter `-Prelease.stage=final`. Note that your Git project must be clean to be able to set version to the `final` stage.
+
+When releasing a final version the update of this Gradle plugin will be published to https://plugins.gradle.org/plugin/com.xebialabs.xl-deploy using Gradle task `publishPlugins`. This plugin is currently owned by user [byaminov](https://plugins.gradle.org/u/byaminov), appropriate credentials are required in your `~/.gradle/gradle.properties` file.
