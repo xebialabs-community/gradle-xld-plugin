@@ -184,7 +184,9 @@ class DarTask extends Jar {
   protected EvaluatedCopySource evaluateFilePath(File f, Object object) {
     def relativeParent
     if (f.getParentFile() && f.getParentFile().getAbsolutePath().startsWith(project.projectDir.getAbsolutePath())) {
-      relativeParent = f.getParentFile().getAbsolutePath().substring(project.projectDir.getAbsolutePath().length())
+      relativeParent = f.getParentFile().getAbsolutePath()
+          .substring(project.projectDir.getAbsolutePath().length())
+          .replace('\\', '/')
     } else {
       relativeParent = '/' + UUID.randomUUID()
     }
