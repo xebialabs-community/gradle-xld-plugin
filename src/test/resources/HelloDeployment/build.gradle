@@ -1,3 +1,17 @@
+buildscript {
+  repositories {
+    maven {
+      url "http://www.knopflerfish.org/maven2/"
+    }
+    maven {
+      url "https://dist.xebialabs.com/public/maven2/"
+    }
+  }
+}
+plugins {
+  id "com.xebialabs.xl-deploy" version "0.2.2"
+}
+
 apply plugin: 'war'
 apply plugin: 'com.xebialabs.xl-deploy'
 
@@ -12,21 +26,6 @@ xldeploy {
 
 repositories {
   mavenCentral()
-}
-
-buildscript {
-  repositories {
-    jcenter()
-    maven {
-      url "http://www.knopflerfish.org/maven2/"
-    }
-    maven {
-      url "https://dist.xebialabs.com/public/maven2/"
-    }
-  }
-  dependencies {
-    classpath 'com.xebialabs.gradle:xl-deploy-gradle-plugin:0.2.0'
-  }
 }
 
 
