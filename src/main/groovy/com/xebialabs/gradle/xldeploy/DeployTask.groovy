@@ -31,6 +31,7 @@ class DeployTask extends BaseDeploymentTask {
   private String currentVersion
 
   @TaskAction
+  @SuppressWarnings("GroovyUnusedDeclaration")
   public void executeDeployment() {
     try {
       boot()
@@ -39,7 +40,7 @@ class DeployTask extends BaseDeploymentTask {
       if (Strings.emptyToNull(environmentId) != null) {
         deployPackage(deploymentPackage)
       } else {
-        logger.debug("No environmentId is specified for $DEPLOY_TASK_NAME so skipping deployment")
+        logger.info("No environmentId is specified for $DEPLOY_TASK_NAME so skipping deployment")
       }
     } finally {
       shutdown()
@@ -68,7 +69,7 @@ class DeployTask extends BaseDeploymentTask {
     Boolean update = getDeploymentHelper().isApplicationDeployed(deploymentPackage.getId(), targetEnvironment.getId());
     generateDeployment(deploymentPackage, targetEnvironment, update);
 
-    logger.info("Deployeds to be included into generatedDeployment:");
+    logger.info("Deployeds to be included into generated deployment:");
     for (ConfigurationItem d : generatedDeployment.getDeployeds()) {
       logger.info("    -> " + d.getId());
     }
@@ -88,7 +89,7 @@ class DeployTask extends BaseDeploymentTask {
     runDeploymentTask(taskId);
 
     if (this.deletePreviouslyDeployedDar && update && currentVersion != null) {
-      logger.info("removing the previous version $currentVersion");
+      logger.lifecycle("Removing the previous version $currentVersion");
       try {
         communicator.getProxies().getRepositoryService().delete(currentVersion);
       } catch (Exception e) {
@@ -116,7 +117,7 @@ class DeployTask extends BaseDeploymentTask {
       getDeploymentHelper().skipAllSteps(taskId);
     }
 
-    logger.info("Executing generatedDeployment task");
+    logger.lifecycle("Executing generated deployment task: $taskId (run Gradle with '-i' to see detailed output)");
     try {
       TaskExecutionState taskExecutionState = getDeploymentHelper().executeAndArchiveTask(taskId);
       if (taskExecutionState.isExecutionHalted()) {
@@ -124,7 +125,7 @@ class DeployTask extends BaseDeploymentTask {
       }
     } catch (IllegalStateException e) {
       if (cancelTaskOnError) {
-        logger.info("cancel task on error " + taskId);
+        logger.lifecycle("Cancel task on error " + taskId);
         communicator.getProxies().getTaskService().cancel(taskId);
       }
       throw e;
@@ -152,7 +153,7 @@ class DeployTask extends BaseDeploymentTask {
     RepositoryService repositoryService = communicator.getProxies().getRepositoryService();
 
     if (update) {
-      logger.info(" ... Application already exists => preparing update");
+      logger.lifecycle("Application already exists => preparing update");
       generatedDeployment = deploymentService.prepareUpdate(deploymentPackage.getId(),
           getDeployedApplicationId(deploymentPackage.getId(), targetEnvironment.getId()));
       currentVersion = repositoryService.read(getDeployedApplicationId(
@@ -161,7 +162,7 @@ class DeployTask extends BaseDeploymentTask {
         generatedDeployment = deploymentService.prepareAutoDeployeds(generatedDeployment);
       }
     } else {
-      logger.info(" ... Application not found in deployed => preparing for initial deployment");
+      logger.lifecycle("Application not found in deployed => preparing for initial deployment");
       generatedDeployment = deploymentService.prepareInitial(deploymentPackage.getId(), targetEnvironment.getId());
       generatedDeployment = deploymentService.prepareAutoDeployeds(generatedDeployment);
     }

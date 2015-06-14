@@ -277,7 +277,7 @@ public class DeploymentHelper {
      * Uploads and imports a .dar package to deployit.
      */
     public ConfigurationItem uploadPackage(File darFile) {
-        log.info("Importing dar file " + darFile.getAbsolutePath());
+        log.lifecycle("Importing dar file " + darFile.getAbsolutePath());
         return new DeployitRemoteClient(communicator).importPackage(darFile.getAbsolutePath());
     }
 
