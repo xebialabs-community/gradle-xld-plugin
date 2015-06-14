@@ -33,10 +33,29 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 }
 
 pluginBundle {
-  website = project_url
-  vcsUrl = project_scm
-  description = project_description_full
+  website = 'https://github.com/xebialabs-community/gradle-xld-plugin'
+  vcsUrl = 'https://github.com/xebialabs-community/gradle-xld-plugin.git'
   tags = ['deployment', 'deploy', 'xldeploy', 'cd', 'continuous delivery']
+  description = """\
+This Gradle plugin allows you to deploy your application to an environment as a part of the build process. It uses XL Deploy (http://xebialabs.com/products/xl-deploy/) server to perform the deployment.
+
+Please find more information and usage instructions on the GitHub project page (https://github.com/xebialabs-community/gradle-xld-plugin/blob/master/README.md).
+
+NOTE: THIS PLUGIN DEPENDS ON SOME ADDITIONAL REPOSITORIES:
+buildscript {
+  repositories {
+    maven {
+      url "http://www.knopflerfish.org/maven2/"
+    }
+    maven {
+      url "https://dist.xebialabs.com/public/maven2/"
+    }
+  }
+}
+plugins {
+  id "com.xebialabs.xl-deploy" version "x.x.x"
+}
+"""
 
   plugins {
     xlDeployPlugin {
@@ -46,8 +65,8 @@ pluginBundle {
   }
 
   mavenCoordinates {
-    groupId = project_group_id
-    artifactId = project_artifact_id
+    groupId = 'com.xebialabs.gradle'
+    artifactId = 'xl-deploy-gradle-plugin'
   }
 }
 
