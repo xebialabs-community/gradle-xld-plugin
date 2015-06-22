@@ -42,6 +42,9 @@ Or this on Gradle 2.0 or lower:
       repositories {
         jcenter()
         maven {
+          url "https://plugins.gradle.org/m2/"
+        }
+        maven {
           url "http://www.knopflerfish.org/maven2/"
         }
         maven {
