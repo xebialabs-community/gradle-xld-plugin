@@ -1,0 +1,55 @@
+apply plugin: 'maven-publish'
+
+def pomConfig = {
+  name 'XL Deploy Gradle Plugin'
+  url 'https://github.com/xebialabs-community/gradle-xld-plugin'
+  scm { url 'https://github.com/xebialabs-community/gradle-xld-plugin.git' }
+
+  organization {
+    name 'XebiaLabs'
+    url 'http://www.xebialabs.com'
+  }
+}
+
+publishing {
+  publications {
+    gradlePlugin(MavenPublication) {
+      from components.java
+      artifact sourcesJar
+      artifact javadocJar
+
+      groupId 'com.xebialabs.gradle'
+      artifactId 'xl-deploy-gradle-plugin'
+
+      pom.withXml {
+        asNode().appendNode('description', 'Gradle plugin to execute deployments using XL Deploy server')
+        asNode().children().last() + pomConfig
+      }
+    }
+  }
+}
+
+bintray {
+  user = bintrayUsername
+  key = bintrayApiKey
+
+  publications = ['gradlePlugin']
+  dryRun = false
+  publish = true
+  pkg {
+    repo = 'maven'
+    userOrg = 'xebialabs'
+    name = 'xl-deploy-gradle-plugin'
+    desc = 'Gradle plugin to execute deployments using XL Deploy server'
+    websiteUrl = 'https://github.com/xebialabs-community/gradle-xld-plugin'
+    issueTrackerUrl = 'https://github.com/xebialabs-community/gradle-xld-plugin/issues'
+    vcsUrl = 'https://github.com/xebialabs-community/gradle-xld-plugin.git'
+    licenses = ['Apache-2.0']
+    labels = ['deployment', 'deploy', 'xldeploy', 'cd', 'continuous delivery', 'gradle']
+    publicDownloadNumbers = true
+    version {
+      attributes = ['gradle-plugin': "com.xebialabs.xl-deploy:com.xebialabs.gradle:xl-deploy-gradle-plugin"]
+      vcsTag = "v${project.version}"
+    }
+  }
+}
