@@ -6,7 +6,6 @@ plugins {
 }
 
 apply plugin: 'groovy'
-apply from: 'extra_publication.gradle'
 
 dependencies {
   compile gradleApi()
@@ -20,6 +19,9 @@ release {
 tasks.release.dependsOn tasks.publishPlugins
 tasks.release.dependsOn tasks.bintrayUpload
 tasks.releaseCheck.dependsOn tasks.clean
+if (!project.hasProperty('release.scope')) {
+  project.ext['release.scope'] = 'patch'
+}
 
 clean.doLast {
   project.delete 'src/test/resources/HelloDeployment/build'
@@ -94,3 +96,5 @@ repositories {
     url "https://dist.xebialabs.com/public/maven2/"
   }
 }
+
+apply from: 'extra_publication.gradle'
