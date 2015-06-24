@@ -30,8 +30,8 @@ publishing {
 }
 
 bintray {
-  user = bintrayUsername
-  key = bintrayApiKey
+  user = project.hasProperty('bintrayUsername') ? project.property('bintrayUsername') : ''
+  key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : ''
 
   publications = ['gradlePlugin']
   dryRun = false
