@@ -10,6 +10,7 @@ import org.gradle.api.ProjectConfigurationException
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.bundling.AbstractArchiveTask
 import org.gradle.api.tasks.bundling.Jar
 import org.xml.sax.SAXException
@@ -41,8 +42,8 @@ class DarTask extends Jar {
     return project.file(ext.manifest)
   }
 
-  @Override
-  protected void copy() {
+  @TaskAction
+  protected void darCopy() {
     assert evaluatedManifest : "Expected manifest to be evaluated here. " +
         "Is different instance of DarTask used for execution?"
     def fw = new FileWriter(evaluatedManifest.manifest)

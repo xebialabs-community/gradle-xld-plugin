@@ -98,7 +98,7 @@ class DarTaskTest {
   public void putsArtifactsInDar() {
     dar.destinationDir.mkdirs()
     dar.doAfterEvaluate()
-    dar.copy()
+    dar.darCopy()
     File zipFile = new File(dar.destinationDir, 'test-1.0.dar')
     assert zipFile.exists()
     ZipFile zip = new ZipFile(zipFile)
