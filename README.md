@@ -19,7 +19,7 @@ Environment and deployables configuration needs to be done once, and then the wh
 
 # Installation
 
-The plugin is available at [Gradle Plugins repository](https://plugins.gradle.org/plugin/com.xebialabs.xl-deploy), with some dependencies available in public XebiaLabs Maven repository. You can add the plugin to your `build.gradle` using following code snippet on Gradle 2.1 and higher:
+The plugin is available at [Gradle Plugins repository](https://plugins.gradle.org/plugin/com.xebialabs.xl-deploy), with some dependencies available in public XebiaLabs Maven repository. You can add the plugin to your `build.gradle` using following code snippet on Gradle 2.3 and higher:
 
     buildscript {
       repositories {
@@ -33,10 +33,10 @@ The plugin is available at [Gradle Plugins repository](https://plugins.gradle.or
       }
     }
     plugins {
-      id "com.xebialabs.xl-deploy" version "0.2.2"
+      id "com.xebialabs.xl-deploy" version "0.2.3"
     }
 
-Or this on Gradle 2.0 or lower:
+Or this on Gradle 2.2 or lower:
 
     buildscript {
       repositories {

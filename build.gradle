@@ -19,6 +19,7 @@ release {
 tasks.release.dependsOn tasks.publishPlugins
 tasks.release.dependsOn tasks.bintrayUpload
 tasks.releaseCheck.dependsOn tasks.clean
+tasks.releaseCheck.dependsOn tasks.licenseTest
 if (!project.hasProperty('release.scope')) {
   project.ext['release.scope'] = 'patch'
 }
