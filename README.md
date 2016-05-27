@@ -78,6 +78,8 @@ You can override this location in your `build.gradle`:
         manifest = file('my/other/location/deployit-manifest.xml')
     }
 
+Note that this file does not have to be part of the project and can even be generated during build execution. 
+
 Here is an example manifest file:
 
 ```xml

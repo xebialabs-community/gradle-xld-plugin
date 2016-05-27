@@ -34,6 +34,7 @@ class DarTaskTest {
       project.getRepositories().mavenCentral()
     }
     dar = project.tasks.dar as DarTask
+    project.tasks.clean.execute()
   }
 
   @Test
@@ -96,14 +97,17 @@ class DarTaskTest {
 
   @Test
   public void putsArtifactsInDar() {
+    project.tasks.war.execute()
+
     dar.destinationDir.mkdirs()
-    dar.doAfterEvaluate()
+    dar.processManifest()
     dar.darCopy()
     File zipFile = new File(dar.destinationDir, 'test-1.0.dar')
     assert zipFile.exists()
     ZipFile zip = new ZipFile(zipFile)
     assert zip.getEntry('artifacts/file.txt') != null
     assert zip.getEntry('artifacts/mysql/mysql-connector-java-2.0.14.jar') != null
+    assert zip.getEntry('artifacts/build/libs/test-1.0.war') != null
 
     def uuidEntry
     zip.entries().each { e ->
@@ -112,6 +116,29 @@ class DarTaskTest {
       }
     }
     assert uuidEntry != null
+  }
+
+  @Test(expected = FileNotFoundException.class)
+  public void failsIfArtifactIsNotPresent() {
+    // The WAR task did not run
+
+    dar.destinationDir.mkdirs()
+    dar.processManifest()
+    dar.darCopy()
+  }
+
+  @Test
+  public void shouldLetGenerateManifest() {
+    def generatedManifest = project.file(project.buildDir.path + "/generated.xml")
+    project.extensions.findByType(XlDeployPluginExtension).manifest = generatedManifest
+
+    dar.doAfterEvaluate()
+    assert dar.evaluatedManifest == null
+
+    project.buildDir.mkdir()
+    generatedManifest.write("""<udm.DeploymentPackage version="\${project.version}" application="HelloDeployment"/>""")
+    dar.execute()
+    assert dar.evaluatedManifest.resolvedManifestContent.contains("version=\"1.0\"")
   }
 
 }

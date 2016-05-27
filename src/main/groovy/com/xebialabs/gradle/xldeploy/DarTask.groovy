@@ -25,37 +25,51 @@ class DarTask extends Jar {
   public static final String DAR_CONFIGURATION_NAME = "dar"
   public static final String DAR_EXTENSION = 'dar'
 
-  private def ext = project.extensions.getByName(XlDeployPlugin.PLUGIN_EXTENSION_NAME) as XlDeployPluginExtension
+  private def xldExtension = project.extensions.getByName(XlDeployPlugin.PLUGIN_EXTENSION_NAME) as XlDeployPluginExtension
 
   protected ManifestAndArtifacts evaluatedManifest
 
   DarTask() {
     evaluatedManifest = null
     extension = DAR_EXTENSION
+
     project.afterEvaluate {
       doAfterEvaluate()
     }
   }
 
+  protected void doAfterEvaluate() {
+    if (getDarManifest()?.exists()) {
+      logger.info("DAR manifest file exists so processing it directly: ${getDarManifest()}")
+      processManifest()
+    } else {
+      logger.info("DAR manifest file does not exist so it will be processed when executing 'dar' task")
+    }
+  }
+
   @InputFile
   File getDarManifest() {
-    return project.file(ext.manifest)
+    xldExtension.manifest?.exists() ? project.file(xldExtension.manifest) : null
   }
 
   @TaskAction
   protected void darCopy() {
-    assert evaluatedManifest : "Expected manifest to be evaluated here. " +
-        "Is different instance of DarTask used for execution?"
+    if (!evaluatedManifest) {
+      processManifest()
+    }
+
     def fw = new FileWriter(evaluatedManifest.manifest)
     fw.write(evaluatedManifest.resolvedManifestContent)
     fw.close()
 
     addToCopySpec(true)
 
+    ensureAllSourcesArePresent()
+
     super.copy()
   }
 
-  protected void doAfterEvaluate() {
+  protected void processManifest() {
 
     evaluatedManifest = analyzeManifest()
 
@@ -84,9 +98,9 @@ class DarTask extends Jar {
   }
 
   protected ManifestAndArtifacts analyzeManifest() throws ProjectConfigurationException {
-    if (!getDarManifest().exists()) {
+    if (!getDarManifest()?.exists()) {
       throw new ProjectConfigurationException("DAR manifest file does not exist: [${getDarManifest()}]",
-          new FileNotFoundException(getDarManifest().toString()))
+          new FileNotFoundException(getDarManifest()?.toString()))
     }
     try {
 
@@ -203,6 +217,23 @@ class DarTask extends Jar {
       entryPath = "artifacts/${d.getGroup()}/${d.getName()}-${d.getVersion()}.jar"
       copySource = d
       it
+    }
+  }
+
+  protected void ensureAllSourcesArePresent() {
+    evaluatedManifest.artifactPathToCopyable.values().each { copyable ->
+      if (copyable instanceof File && !copyable.exists()) {
+        throw new FileNotFoundException("DAR artifact source file not found: $copyable. " +
+            "Please make sure it is present before the 'dar' task runs")
+      }
+      if (copyable instanceof AbstractArchiveTask) {
+        copyable.outputs.getFiles().each { f ->
+          if (!f.exists()) {
+            throw new FileNotFoundException("Outputs not found for $copyable which is used as an artifact of the DAR file: $f. " +
+                "Please make sure $copyable is executed before $this")
+          }
+        }
+      }
     }
   }
 
