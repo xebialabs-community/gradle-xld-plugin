@@ -9,7 +9,7 @@ buildscript {
   }
 }
 plugins {
-  id "com.xebialabs.xl-deploy" version "0.2.3"
+  id "com.xebialabs.xl-deploy" version "0.3.0"
 }
 
 apply plugin: 'war'
