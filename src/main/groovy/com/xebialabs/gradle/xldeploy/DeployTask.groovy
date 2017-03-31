@@ -15,9 +15,9 @@ import com.xebialabs.deployit.engine.api.dto.Deployment
 import com.xebialabs.deployit.engine.api.execution.TaskExecutionState
 import com.xebialabs.deployit.plugin.api.udm.ConfigurationItem
 import com.xebialabs.deployit.plugin.api.validation.ValidationMessage
+import org.gradle.api.GradleException
 import org.gradle.api.ProjectConfigurationException
 import org.gradle.api.tasks.TaskAction
-import org.gradle.mvn3.org.apache.maven.ProjectBuildFailureException
 
 import static XlDeployPlugin.DEPLOY_TASK_NAME
 
@@ -51,10 +51,10 @@ class DeployTask extends BaseDeploymentTask {
 
     def darFiles = project.configurations.getByName(DarTask.DAR_CONFIGURATION_NAME).getAllArtifacts()
     if (darFiles.isEmpty()) {
-      throw new ProjectBuildFailureException("Could not find any generated DAR packages in the project. Did the 'dar' task run?", null)
+      throw new GradleException("Could not find any generated DAR packages in the project. Did the 'dar' task run?", null)
     }
     if (darFiles.size() > 1) {
-      throw new ProjectBuildFailureException("Found more than one DAR packages generated in project ${project.name}: $darFiles.", null)
+      throw new GradleException("Found more than one DAR packages generated in project ${project.name}: $darFiles.", null)
     }
     def darFile = darFiles.files.getSingleFile()
 
@@ -121,7 +121,7 @@ class DeployTask extends BaseDeploymentTask {
     try {
       TaskExecutionState taskExecutionState = getDeploymentHelper().executeAndArchiveTask(taskId);
       if (taskExecutionState.isExecutionHalted()) {
-        throw new ProjectBuildFailureException("Errors when executing task $taskId. Please run with '-i' for more information", null);
+        throw new GradleException("Errors when executing task $taskId. Please run with '-i' for more information", null);
       }
     } catch (IllegalStateException e) {
       if (cancelTaskOnError) {
