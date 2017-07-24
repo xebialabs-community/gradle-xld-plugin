@@ -9,7 +9,7 @@ buildscript {
   }
 }
 plugins {
-  id "com.xebialabs.xl-deploy" version "0.3.0"
+  id "com.xebialabs.xl-deploy" version "0.4.1"
 }
 
 apply plugin: 'war'
@@ -29,8 +29,8 @@ repositories {
 }
 
 //apply from: 'generated_deployment.gradle'
-
-// Below config lets you use development version of the plugin
+//
+//// Below config lets you use development version of the plugin
 //buildscript {
 //  repositories {
 //    jcenter()
