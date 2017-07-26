@@ -39,5 +39,5 @@ warTask: 'war'
   }
 }
 
-tasks.darConfiguration.dependsOn tasks.generateDeployitManifest
+tasks.configureDar.dependsOn tasks.generateDeployitManifest
 tasks.dar.dependsOn tasks.war

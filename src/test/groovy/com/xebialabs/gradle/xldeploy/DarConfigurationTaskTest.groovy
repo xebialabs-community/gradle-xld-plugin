@@ -22,7 +22,7 @@ import static org.junit.Assert.fail
 class DarConfigurationTaskTest {
 
   private Project project
-  private DarConfigurationTask darConfiguration
+  private DarConfigurationTask configureDar
   private DarTask dar
 
   @Before
@@ -35,14 +35,14 @@ class DarConfigurationTaskTest {
       project.getRepositories().mavenCentral()
     }
 
-    darConfiguration = project.tasks.darConfiguration as DarConfigurationTask
+    configureDar = project.tasks.configureDar as DarConfigurationTask
     dar = project.tasks.dar as DarTask
     project.tasks.clean.execute()
   }
 
   @Test
   public void projectVersionIsResolved() {
-    def manifest = darConfiguration.analyzeManifest().resolvedManifestContent
+    def manifest = configureDar.analyzeManifest().resolvedManifestContent
     assert manifest.contains('version="1.0"')
   }
 
@@ -50,13 +50,13 @@ class DarConfigurationTaskTest {
   public void snapshotIsConvertedToTimestamp() {
     project.version = "1.0-SNAPSHOT"
     def date = new SimpleDateFormat("yyyyMMdd").format(new Date())
-    def manifest = darConfiguration.analyzeManifest().resolvedManifestContent
+    def manifest = configureDar.analyzeManifest().resolvedManifestContent
     assert manifest =~ /version="1\.0-$date-\d\d\d\d\d\d"/
   }
 
   @Test
   public void archiveTaskOutputIsResolved() {
-    def result = darConfiguration.analyzeManifest()
+    def result = configureDar.analyzeManifest()
     def expectedPath = 'artifacts/build/libs/test-1.0.war'
     assert result.resolvedManifestContent.contains(
       "<jee.War name=\"HelloDeployment\" file=\"$expectedPath\" />")
@@ -65,7 +65,7 @@ class DarConfigurationTaskTest {
 
   @Test
   public void simpleFileIsResolved() {
-    def result = darConfiguration.analyzeManifest()
+    def result = configureDar.analyzeManifest()
     assert result.resolvedManifestContent.contains(
       '<file.File name="file-1" file="artifacts/file.txt"')
     assert (result.artifactPathToCopyable['artifacts/file.txt'] as File).exists()
@@ -73,7 +73,7 @@ class DarConfigurationTaskTest {
 
   @Test
   public void dependencyIsResolved() {
-    def result = darConfiguration.analyzeManifest()
+    def result = configureDar.analyzeManifest()
     def expectedPath = "artifacts/mysql/mysql-connector-java-2.0.14.jar"
     assert result.resolvedManifestContent.contains(
         "<file.Archive name=\"mysqlDriver\" file=\"$expectedPath\"")
@@ -82,7 +82,7 @@ class DarConfigurationTaskTest {
 
   @Test
   public void fileReferencesOutsideProjectAreResolvedAndPutInUUIDFolders() {
-    def manifest = darConfiguration.analyzeManifest().resolvedManifestContent
+    def manifest = configureDar.analyzeManifest().resolvedManifestContent
     assert manifest =~ /name="file-2" file="artifacts\/.{36}\/file-2.txt"/
   }
 
@@ -91,7 +91,7 @@ class DarConfigurationTaskTest {
     def ext = project.extensions.getByName(XlDeployPlugin.PLUGIN_EXTENSION_NAME) as XlDeployPluginExtension
     ext.manifest = project.file('src/main/dar/deployit-manifest-invalid.xml')
     try {
-      darConfiguration.analyzeManifest()
+      configureDar.analyzeManifest()
       fail "Expected error as DAR manifest is not a valid XML file"
     } catch (ProjectConfigurationException e) {
       assert e.cause instanceof SAXException
@@ -103,8 +103,8 @@ class DarConfigurationTaskTest {
     project.tasks.war.execute()
 
     dar.destinationDir.mkdirs()
-    darConfiguration.processManifest()
-    darConfiguration.execute()
+    configureDar.processManifest()
+    configureDar.execute()
     dar.execute()
     File zipFile = new File(dar.destinationDir, 'test-1.0.dar')
     assert zipFile.exists()
@@ -127,8 +127,8 @@ class DarConfigurationTaskTest {
     // The WAR task did not run
 
     dar.destinationDir.mkdirs()
-    darConfiguration.processManifest()
-    darConfiguration.darCopy()
+    configureDar.processManifest()
+    configureDar.darCopy()
     dar.copy()
   }
 
@@ -137,12 +137,12 @@ class DarConfigurationTaskTest {
     def generatedManifest = project.file(project.buildDir.path + "/generated.xml")
     project.extensions.findByType(XlDeployPluginExtension).manifest = generatedManifest
 
-    darConfiguration.doAfterEvaluate()
-    assert darConfiguration.evaluatedManifest == null
+    configureDar.doAfterEvaluate()
+    assert configureDar.evaluatedManifest == null
 
     project.buildDir.mkdir()
     generatedManifest.write("""<udm.DeploymentPackage version="\${project.version}" application="HelloDeployment"/>""")
-    darConfiguration.execute()
-    assert darConfiguration.evaluatedManifest.resolvedManifestContent.contains("version=\"1.0\"")
+    configureDar.execute()
+    assert configureDar.evaluatedManifest.resolvedManifestContent.contains("version=\"1.0\"")
   }
 }
