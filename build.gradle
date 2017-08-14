@@ -55,9 +55,6 @@ NOTE: THIS PLUGIN DEPENDS ON SOME ADDITIONAL REPOSITORIES:
 buildscript {
   repositories {
     maven {
-      url "http://www.knopflerfish.org/maven2/"
-    }
-    maven {
       url "https://dist.xebialabs.com/public/maven2/"
     }
   }
@@ -94,9 +91,6 @@ tasks.licenseTest.doFirst {
 repositories {
   mavenLocal()
   mavenCentral()
-  maven {
-    url "http://www.knopflerfish.org/maven2/"
-  }
   maven {
     url "https://dist.xebialabs.com/public/maven2/"
   }
