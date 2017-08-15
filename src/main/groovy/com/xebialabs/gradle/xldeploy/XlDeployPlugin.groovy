@@ -28,13 +28,22 @@ class XlDeployPlugin implements Plugin<Project> {
 
     addExtensions(project)
 
+
     DarTask dar = project.tasks.create(DAR_TASK_NAME, DarTask.class)
-    dar.configure {
+
+    DarConfigurationTask configureDar = project.tasks.create("configureDar", DarConfigurationTask.class)
+    configureDar.configure {
       group = BasePlugin.BUILD_GROUP
       description = "Create a DAR package"
+      darTask = dar
     }
+
+    dar.configure {
+      dependsOn configureDar
+    }
+
     ArchivePublishArtifact darArtifact = new ArchivePublishArtifact(dar)
-    project.configurations.create(DarTask.DAR_CONFIGURATION_NAME).artifacts.add(darArtifact)
+    project.configurations.create(DarConfigurationTask.DAR_CONFIGURATION_NAME).artifacts.add(darArtifact)
 
     DeployTask deploy = project.tasks.create(DEPLOY_TASK_NAME, DeployTask.class)
     deploy.configure {
@@ -60,5 +69,4 @@ class XlDeployPlugin implements Plugin<Project> {
       }
     }
   }
-
 }

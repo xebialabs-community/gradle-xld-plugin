@@ -2,40 +2,42 @@ xldeploy {
   manifest = file('./build/generated-deployit-manifest.xml')
 }
 
-task generateDeployitManifest << {
+task generateDeployitManifest {
+  doLast {
 
-  def input = [
+    def input = [
 //      command: 'echo "test"',
-      warTask: 'war'
-  ]
+warTask: 'war'
+    ]
 
-  mkdir buildDir
-  def generated = file(buildDir.path + '/generated-deployit-manifest.xml')
-  generated.write("")
-  generated << """<?xml version="1.0" encoding="UTF-8"?>
+    mkdir buildDir
+    def generated = file(buildDir.path + '/generated-deployit-manifest.xml')
+    generated.write("")
+    generated << """<?xml version="1.0" encoding="UTF-8"?>
 <udm.DeploymentPackage version="\${noSnapshot(project.version)}" application="\${project.name}">
   <deployables>
 """
 
-  if (input.command) {
-    generated << """
+    if (input.command) {
+      generated << """
     <cmd.Command name="test-command">
       <commandLine>${input.command}</commandLine>
     </cmd.Command>
 """
-  }
+    }
 
-  if (input.warTask) {
-    generated << """
+    if (input.warTask) {
+      generated << """
     <jee.War name="HelloDeployment" file="\${artifact(project.${input.warTask})}" />
 """
-  }
+    }
 
-  generated << """
+    generated << """
   </deployables>
 </udm.DeploymentPackage>
 """
+  }
 }
 
-tasks.dar.dependsOn tasks.generateDeployitManifest
+tasks.configureDar.dependsOn tasks.generateDeployitManifest
 tasks.dar.dependsOn tasks.war

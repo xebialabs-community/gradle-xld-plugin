@@ -49,7 +49,7 @@ class DeployTask extends BaseDeploymentTask {
 
   private ConfigurationItem uploadPackage() {
 
-    def darFiles = project.configurations.getByName(DarTask.DAR_CONFIGURATION_NAME).getAllArtifacts()
+    def darFiles = project.configurations.getByName(DarConfigurationTask.DAR_CONFIGURATION_NAME).getAllArtifacts()
     if (darFiles.isEmpty()) {
       throw new GradleException("Could not find any generated DAR packages in the project. Did the 'dar' task run?", null)
     }
