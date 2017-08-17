@@ -25,15 +25,12 @@ The plugin is available at [Gradle Plugins repository](https://plugins.gradle.or
       repositories {
         jcenter()
         maven {
-          url "http://www.knopflerfish.org/maven2/"
-        }
-        maven {
           url "https://dist.xebialabs.com/public/maven2/"
         }
       }
     }
     plugins {
-      id "com.xebialabs.xl-deploy" version "0.4.0"
+      id "com.xebialabs.xl-deploy" version "0.5.0"
     }
 
 Or this on Gradle 2.2 or lower:
@@ -45,20 +42,17 @@ Or this on Gradle 2.2 or lower:
           url "https://plugins.gradle.org/m2/"
         }
         maven {
-          url "http://www.knopflerfish.org/maven2/"
-        }
-        maven {
           url "https://dist.xebialabs.com/public/maven2/"
         }
       }
       dependencies {
-        classpath 'com.xebialabs.gradle:xl-deploy-gradle-plugin:0.2.2'
+        classpath 'com.xebialabs.gradle:xl-deploy-gradle-plugin:0.5.0'
       }
     }
 
     apply plugin: 'com.xebialabs.xl-deploy'
 
-You also need a running instance of XL Deploy server to use this Gradle plugin. If you never worked with XL Deploy before you can download a community edition from the [XebiaLabs website](http://xebialabs.com/download/xl-deploy/) and install it on your local machine.
+You also need a running instance of XL Deploy server to use this Gradle plugin. If you never worked with XL Deploy before you can download a trial edition from the [XebiaLabs website](http://xebialabs.com/download/xl-deploy/) and install it on your local machine.
 
 # Usage
 
@@ -158,4 +152,4 @@ To manage versions this project uses the [nebula-release-plugin](https://github.
 
 By default when you build the project it builds a snapshot version of next (to be released) minor release. You can get rid of `-SNAPSHOT` in the version by adding command-line parameter `-Prelease.stage=final`. Note that your Git project must be clean to be able to set version to the `final` stage.
 
-When releasing a final version the update of this Gradle plugin will be published to https://plugins.gradle.org/plugin/com.xebialabs.xl-deploy using Gradle task `publishPlugins`. This plugin is currently owned by user [byaminov](https://plugins.gradle.org/u/byaminov), appropriate credentials are required in your `~/.gradle/gradle.properties` file.
+When releasing a final version the update of this Gradle plugin will be published to https://plugins.gradle.org/plugin/com.xebialabs.xl-deploy using Gradle task `publishPlugins`. This plugin is currently owned by user [XebiaLabs](https://plugins.gradle.org/u/XebiaLabs), appropriate credentials are required in your `~/.gradle/gradle.properties` file.
