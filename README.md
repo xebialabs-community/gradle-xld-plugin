@@ -1,6 +1,12 @@
 # Gradle XL Deploy Plugin
 
 [![Build Status](https://travis-ci.org/xebialabs-community/gradle-xld-plugin.svg?branch=master)](https://travis-ci.org/xebialabs-community/gradle-xld-plugin)
+[![License: MIT][gradle-xld-plugin-license-image] ][gradle-xld-plugin-license-url]
+
+[gradle-xld-plugin-license-image]: https://img.shields.io/badge/License-MIT-yellow.svg
+[gradle-xld-plugin-license-url]: https://opensource.org/licenses/MIT
+
+
 
 This is a [Gradle](http://gradle.org) plugin which allows you to deploy your application to an environment as a part of the build process. It uses [XL Deploy](http://xebialabs.com/products/xl-deploy/) server to perform the deployment.
 
