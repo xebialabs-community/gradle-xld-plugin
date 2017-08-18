@@ -7,7 +7,7 @@ notifications:
 deploy:
   provider: releases
   api_key:
-    secure: HWP5140Mig3cgoOhRmj7cMWcgGURQOdt7Toc9QJdxTlC6wsEt64sNpx6XBFLovm2RkF57aETpOHQOGlGvy77Pf5UNcGscpAxqg6uealEkiTcatQ+H6m+XjN+lQTViqOESx8Id3h+0Dfcr4pc8oKY2xtzruak/oTMJ37OqUr+qIo=
+    secure: MRLNi3AMqraAqSHkCQIcJtO4fc7MNsJuiclTDUmgkeUsP1Zt4qyMm7S5x73IsPMwEvDqtTvhnNDhf4B2juEeE9D4TdjMbBhV56iptFzwfIpVzF3sV8gzvki6P3jJKylC9gldgkG03gQae81ruFrWpIJIyrOJjG3Kg1Ms7+ZoIXw=
   file: build/libs/gradle-xld-plugin-0.5.0.jar
   skip_cleanup: true
   on:
