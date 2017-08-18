@@ -18,7 +18,7 @@ dependencies {
 }
 
 release {
-  defaultVersionStrategy = nebula.plugin.release.NetflixOssStrategies.SNAPSHOT
+  defaultVersionStrategy = nebula.plugin.release.NetflixOssStrategies.FINAL
 }
 tasks.release.dependsOn tasks.publishPlugins
 tasks.release.dependsOn tasks.bintrayUpload
