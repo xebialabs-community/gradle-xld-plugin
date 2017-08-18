@@ -1,8 +1,11 @@
 # Gradle XL Deploy Plugin
 
 [![Build Status](https://travis-ci.org/xebialabs-community/gradle-xld-plugin.svg?branch=master)](https://travis-ci.org/xebialabs-community/gradle-xld-plugin)
+[![Code Climate][gradle-xld-plugin-code-climate-image] ][gradle-xld-plugin-code-climate-url]
 [![License: MIT][gradle-xld-plugin-license-image] ][gradle-xld-plugin-license-url]
 
+[gradle-xld-plugin-code-climate-image]: https://codeclimate.com/github/xebialabs-community/gradle-xld-plugin/badges/gpa.svg
+[gradle-xld-plugin-code-climate-url]: https://codeclimate.com/github/xebialabs-community/gradle-xld-plugin
 [gradle-xld-plugin-license-image]: https://img.shields.io/badge/License-MIT-yellow.svg
 [gradle-xld-plugin-license-url]: https://opensource.org/licenses/MIT
 
