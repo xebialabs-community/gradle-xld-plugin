@@ -83,7 +83,7 @@ license {
   ext.year = Calendar.getInstance().get(Calendar.YEAR)
   ext.name = 'XEBIALABS'
   exclude "**/*.txt"
-  excludes(["src/test/resources/HelloDeployment/.gradle/**", "src/test/resources/HelloDeployment/userHome/**", "src/test/resources/HelloDeployment/userHome/caches/**"])
+  excludes(["src/test/resources/HelloDeployment/gradle/**","src/test/resources/HelloDeployment/.gradle/**", "src/test/resources/HelloDeployment/userHome/**", "src/test/resources/HelloDeployment/userHome/caches/**"])
 }
 
 
