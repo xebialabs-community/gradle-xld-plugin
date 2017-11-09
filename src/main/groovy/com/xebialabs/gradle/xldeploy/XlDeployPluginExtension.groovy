@@ -41,4 +41,8 @@ class XlDeployPluginExtension {
    */
   String xldEnvironmentId
 
+  /**
+   * LogLevel to use for deployment messages, defaults to INFO
+   */
+  String xldDeployLogLevel
 }

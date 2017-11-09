@@ -36,8 +36,17 @@ class DarConfigurationTaskTest {
     project.apply plugin: 'war'
     project.apply plugin: XlDeployPlugin
     project.version = "1.0"
+    // Support for Gradle test runner passing in parent builds repositories to support builds behind a corporate firewall.
+    List<String> gradleMavenRepos = System.getProperty('gradleMavenRepos', '').split(/,/)
     project.dependencies {
-      project.getRepositories().mavenCentral()
+      if(gradleMavenRepos) {
+        gradleMavenRepos.each { repo ->
+          project.getRepositories().maven { url = repo }
+        }
+      }
+      else {
+        project.getRepositories().mavenCentral()
+      }
     }
 
     configureDar = project.tasks.configureDar as DarConfigurationTask
