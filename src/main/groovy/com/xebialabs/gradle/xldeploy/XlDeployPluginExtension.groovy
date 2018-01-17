@@ -41,4 +41,8 @@ class XlDeployPluginExtension {
    */
   String xldEnvironmentId
 
+  /**
+   * Socket timeout for requests to XLD
+   */
+  Integer socketTimeout = 10000
 }

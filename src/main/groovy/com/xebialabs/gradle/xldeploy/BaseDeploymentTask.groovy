@@ -80,6 +80,7 @@ abstract class BaseDeploymentTask extends DefaultTask {
           .withHost(url.getHost())
           .withPort(url.getPort() != -1 ? url.getPort() : url.getDefaultPort())
           .withContext(url.getPath())
+          .withSocketTimeout(xldExtension.socketTimeout)
           .build();
 
       communicator = RemoteBooter.boot(config);
