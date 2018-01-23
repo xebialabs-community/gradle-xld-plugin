@@ -95,7 +95,7 @@ license {
   excludes(["**/*.txt","**/gradlew.*","**/gradle-wrapper.*","src/test/resources/HelloDeployment/.gradle/**"])
 }
 
-clean {
+clean.doLast {
   delete "src/test/resources/HelloDeployment/.gradle",
     "src/test/resources/HelloDeployment/build",
     "src/test/resources/HelloDeployment/userHome"

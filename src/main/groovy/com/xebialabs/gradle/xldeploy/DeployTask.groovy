@@ -38,12 +38,7 @@ class DeployTask extends BaseDeploymentTask {
   @SuppressWarnings("GroovyUnusedDeclaration")
   public void executeDeployment() {
     try {
-      if(xldExtension.xldDeployLogLevel) {
-        logLevel = LogLevel.valueOf(xldExtension.xldDeployLogLevel)
-      }
-      else {
-        logLevel = LogLevel.INFO
-      }
+      logLevel = LogLevel.valueOf(xldExtension.xldDeployLogLevel)
       boot()
       final ConfigurationItem deploymentPackage = uploadPackage();
       environmentId = environmentId ?: xldExtension.xldEnvironmentId
