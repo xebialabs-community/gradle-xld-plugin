@@ -134,6 +134,7 @@ You can configure the task using `xldeploy` extension:
       xldUsername = "admin"
       xldPassword = "admin"
       xldEnvironmentId = "Environments/local"
+      socketTimeout = 10000
     }
 
 The `xldUrl` is http://localhost:4516/ by default. `xldUsername` and `xldPassword` can be also configured in your `~/.gradle/gradle.properties` file instead of `build.gradle`, so that you don't have to store credentials in source files. `xldEnvironmentId` is the name of environment to which to deploy.
