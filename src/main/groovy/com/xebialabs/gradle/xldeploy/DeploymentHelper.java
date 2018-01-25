@@ -32,6 +32,7 @@ import com.xebialabs.deployit.plugin.api.udm.base.BaseConfigurationItem;
 import com.xebialabs.deployit.plugin.api.validation.ValidationMessage;
 import org.apache.commons.lang.StringUtils;
 import org.gradle.api.logging.Logger;
+import org.joda.time.DateTime;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -132,18 +133,12 @@ public class DeploymentHelper {
      */
     public void logTaskState(String taskId) {
         TaskState taskState = proxies.getTaskService().getTask(taskId);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
         log.info(format("%s Description    %s", taskId, taskState.getDescription()));
         log.info(format("%s State          %s %d/%d", taskId, taskState.getState(), taskState.getCurrentStepNr(), taskState.getNrSteps()));
-        if (taskState.getStartDate() != null) {
-            final GregorianCalendar startDate = taskState.getStartDate().toGregorianCalendar();
-            log.info(format("%s Start      %s", taskId, sdf.format(startDate.getTime())));
-        }
 
-        if (taskState.getCompletionDate() != null) {
-            final GregorianCalendar completionDate = taskState.getCompletionDate().toGregorianCalendar();
-            log.info(format("%s Completion %s", taskId, sdf.format(completionDate.getTime())));
-        }
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+        logDate("%s Start      %s", taskId, taskState.getStartDate(), sdf);
+        logDate("%s Completion %s", taskId, taskState.getCompletionDate(), sdf);
 
         for (int i = 1; i <= taskState.getNrSteps(); i++) {
             logStepState(taskId, i);
@@ -151,6 +146,13 @@ public class DeploymentHelper {
 
         if (TaskExecutionState.STOPPED.equals(taskState.getState()))
             throw new IllegalStateException(format("Errors when executing task %s", taskId));
+    }
+
+    private void logDate(String pattern, String taskId, DateTime date, SimpleDateFormat sdf) {
+        if (date != null) {
+            final GregorianCalendar startDate = date.toGregorianCalendar();
+            log.info(format(pattern, taskId, sdf.format(startDate.getTime())));
+        }
     }
 
     /**
