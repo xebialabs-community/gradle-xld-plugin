@@ -10,6 +10,7 @@
 package com.xebialabs.gradle.xldeploy
 
 import org.gradle.api.Project
+import org.gradle.api.logging.LogLevel
 
 class XlDeployPluginExtension {
   Project project
@@ -39,6 +40,11 @@ class XlDeployPluginExtension {
    * Environment ID to deploy to.
    */
   String xldEnvironmentId
+
+  /**
+   * LogLevel to use for deployment messages, defaults to INFO
+   */
+  String xldDeployLogLevel = LogLevel.INFO
 
   /**
    * Socket timeout for requests to XLD

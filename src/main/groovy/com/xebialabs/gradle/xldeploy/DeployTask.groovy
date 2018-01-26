@@ -21,9 +21,8 @@ import com.xebialabs.deployit.plugin.api.udm.ConfigurationItem
 import com.xebialabs.deployit.plugin.api.validation.ValidationMessage
 import org.gradle.api.GradleException
 import org.gradle.api.ProjectConfigurationException
+import org.gradle.api.logging.LogLevel
 import org.gradle.api.tasks.TaskAction
-
-import static XlDeployPlugin.DEPLOY_TASK_NAME
 
 /**
  * This task uploads a DAR package to XL Deploy and can run a deployment
@@ -38,13 +37,14 @@ class DeployTask extends BaseDeploymentTask {
   @SuppressWarnings("GroovyUnusedDeclaration")
   public void executeDeployment() {
     try {
+      logLevel = LogLevel.valueOf(xldExtension.xldDeployLogLevel)
       boot()
       final ConfigurationItem deploymentPackage = uploadPackage();
       environmentId = environmentId ?: xldExtension.xldEnvironmentId
       if (Strings.emptyToNull(environmentId) != null) {
         deployPackage(deploymentPackage)
       } else {
-        logger.info("No environmentId is specified for $DEPLOY_TASK_NAME so skipping deployment")
+        logger.log(logLevel, "No environmentId is specified for $XlDeployPlugin.DEPLOY_TASK_NAME so skipping deployment")
       }
     } finally {
       shutdown()
@@ -63,7 +63,7 @@ class DeployTask extends BaseDeploymentTask {
     def darFile = darFiles.files.getSingleFile()
 
     final ConfigurationItem deploymentPackage = getDeploymentHelper().uploadPackage(darFile);
-    logger.info("Application [${deploymentPackage.getId()}] has been imported");
+    logger.log(logLevel, "Application [${deploymentPackage.getId()}] has been imported");
     return deploymentPackage;
   }
 
@@ -73,20 +73,20 @@ class DeployTask extends BaseDeploymentTask {
     Boolean update = getDeploymentHelper().isApplicationDeployed(deploymentPackage.getId(), targetEnvironment.getId());
     generateDeployment(deploymentPackage, targetEnvironment, update);
 
-    logger.info("Deployeds to be included into generated deployment:");
+    logger.log(logLevel, "Deployeds to be included into generated deployment:");
     for (ConfigurationItem d : generatedDeployment.getDeployeds()) {
-      logger.info("    -> " + d.getId());
+      logger.log(logLevel, "    -> " + d.getId());
     }
 
     if (!Strings.isNullOrEmpty(orchestrator)) {
-      logger.info("Using orchestrator: " + orchestrator);
+      logger.log(logLevel, "Using orchestrator: " + orchestrator);
       generatedDeployment.getDeployedApplication().setProperty("orchestrator", orchestrator);
     }
 
     String taskId = generateDeploymentTask();
     if (testMode) {
-      logger.info(" ... Test mode discovered => displaying and cancelling the generated task");
-      getDeploymentHelper().logTaskState(taskId);
+      logger.log(logLevel, " ... Test mode discovered => displaying and cancelling the generated task");
+      getDeploymentHelper().logTaskState(logLevel, taskId);
       communicator.getProxies().getTaskService().cancel(taskId);
       return;
     }
@@ -104,7 +104,7 @@ class DeployTask extends BaseDeploymentTask {
 
   private ConfigurationItem getTargetEnvironment() {
     if (Strings.emptyToNull(environmentId) == null) {
-      throw new ProjectConfigurationException("Mandatory parameter environmentId is not set for task ${DEPLOY_TASK_NAME}", null);
+      throw new ProjectConfigurationException("Mandatory parameter environmentId is not set for task ${XlDeployPlugin.DEPLOY_TASK_NAME}", null);
     }
 
     ConfigurationItem targetEnvironment = getDeploymentHelper().readCiOrNull(environmentId);
@@ -117,15 +117,19 @@ class DeployTask extends BaseDeploymentTask {
 
   private void runDeploymentTask(String taskId) {
     if (skipMode) {
-      logger.info(" ... Skip mode discovered");
+      logger.log(logLevel, " ... Skip mode discovered");
       getDeploymentHelper().skipAllSteps(taskId);
     }
 
-    logger.lifecycle("Executing generated deployment task: $taskId (run Gradle with '-i' to see detailed output)");
+    String detailedHelpMessage = ""
+    if (logLevel == LogLevel.INFO) {
+      detailedHelpMessage = " (run Gradle with '-i' to see detailed output)"
+    }
+    logger.lifecycle("Executing generated deployment task: $taskId$detailedHelpMessage");
     try {
-      TaskExecutionState taskExecutionState = getDeploymentHelper().executeAndArchiveTask(taskId);
+      TaskExecutionState taskExecutionState = getDeploymentHelper().executeAndArchiveTask(logLevel, taskId);
       if (taskExecutionState.isExecutionHalted()) {
-        throw new GradleException("Errors when executing task $taskId. Please run with '-i' for more information", null);
+        throw new GradleException("Errors when executing task $taskId$detailedHelpMessage", null);
       }
     } catch (IllegalStateException e) {
       if (cancelTaskOnError) {
@@ -138,7 +142,7 @@ class DeployTask extends BaseDeploymentTask {
 
   private String generateDeploymentTask() {
     String taskId;
-    logger.info("Creating a task");
+    logger.log(logLevel, "Creating a task");
     try {
       taskId = communicator.getProxies().getDeploymentService()
           .createTask(getDeploymentHelper().validateDeployment(generatedDeployment));
@@ -148,7 +152,7 @@ class DeployTask extends BaseDeploymentTask {
       }
       throw new RuntimeException(validationError);
     }
-    logger.info("    -> task id: $taskId");
+    logger.log(logLevel, "    -> task id: $taskId");
     return taskId;
   }
 

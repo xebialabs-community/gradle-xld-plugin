@@ -14,6 +14,7 @@ import com.xebialabs.deployit.booter.remote.DeployitCommunicator
 import com.xebialabs.deployit.booter.remote.RemoteBooter
 import org.gradle.api.DefaultTask
 import org.gradle.api.ProjectConfigurationException
+import org.gradle.api.logging.LogLevel
 
 import static XlDeployPlugin.PLUGIN_EXTENSION_NAME
 
@@ -59,6 +60,11 @@ abstract class BaseDeploymentTask extends DefaultTask {
    * task will be left as is.
    */
   boolean cancelTaskOnError;
+
+  /**
+   * Set a logging level for deployment messages, defaults to INFO if not set
+   */
+  LogLevel logLevel;
 
   protected DeployitCommunicator communicator;
 

@@ -1,5 +1,6 @@
 plugins {
   id "com.gradle.plugin-publish" version "0.9.9"
+  id "java-gradle-plugin"
   id "com.github.hierynomus.license" version "0.14.0"
   id 'nebula.nebula-release' version '4.0.1'
   id "com.jfrog.bintray" version "1.8.0"
@@ -15,6 +16,15 @@ dependencies {
 
   testCompile group: 'junit', name: 'junit', version: '4.12'
 
+}
+
+gradlePlugin {
+  plugins {
+    xlDeployGradlePlugin {
+      id = "com.xebialabs.xl-deploy"
+      implementationClass = "com.xebialabs.gradle.xldeploy.XlDeployPlugin"
+    }
+  }
 }
 
 release {
@@ -85,6 +95,11 @@ license {
   excludes(["**/*.txt","**/gradlew*","**/gradle-wrapper.*","src/test/resources/HelloDeployment/.gradle/**"])
 }
 
+clean.doLast {
+  delete "src/test/resources/HelloDeployment/.gradle",
+    "src/test/resources/HelloDeployment/build",
+    "src/test/resources/HelloDeployment/userHome"
+}
 
 repositories {
   mavenLocal()
@@ -95,3 +110,15 @@ repositories {
 }
 
 apply from: 'extra_publication.gradle'
+
+// Pass to the external maven repositories after any modifications have been done during
+// the evaluation phase (as in an init.gradle script).  Needed for builds that are done
+// inside a corporate firewall.
+afterEvaluate {
+  String gradleMavenRepos = repositories.withType(MavenArtifactRepository).findAll {
+    it.name != 'MavenLocal' && it.name != 'Embedded Kotlin Repository'
+  }.url.join(',')
+  test {
+    systemProperty 'gradleMavenRepos', gradleMavenRepos
+  }
+}

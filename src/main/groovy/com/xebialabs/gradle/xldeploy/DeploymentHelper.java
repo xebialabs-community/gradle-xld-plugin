@@ -31,6 +31,7 @@ import com.xebialabs.deployit.plugin.api.udm.ConfigurationItem;
 import com.xebialabs.deployit.plugin.api.udm.base.BaseConfigurationItem;
 import com.xebialabs.deployit.plugin.api.validation.ValidationMessage;
 import org.apache.commons.lang.StringUtils;
+import org.gradle.api.logging.LogLevel;
 import org.gradle.api.logging.Logger;
 import org.joda.time.DateTime;
 
@@ -84,17 +85,17 @@ public class DeploymentHelper {
      * Starts task, waits until it's done.
      * Returns one of the states: {DONE, EXECUTED, STOPPED, CANCELLED}.
      */
-    public TaskExecutionState executeAndArchiveTask(String taskId) {
+    public TaskExecutionState executeAndArchiveTask(LogLevel logLevel, String taskId) {
         TaskService taskService = proxies.getTaskService();
 
-        log.info("-----------------------");
-        log.info("Task execution plan: ");
-        log.info("-----------------------");
-        logTaskState(taskId);
+        log.log(logLevel, "-----------------------");
+        log.log(logLevel, "Task execution plan: ");
+        log.log(logLevel, "-----------------------");
+        logTaskState(logLevel, taskId);
 
-        log.info("-----------------------");
-        log.info("Task execution progress: ");
-        log.info("-----------------------");
+        log.log(logLevel, "-----------------------");
+        log.log(logLevel, "Task execution progress: ");
+        log.log(logLevel, "-----------------------");
         taskService.start(taskId);
 
         TaskState taskState = taskService.getTask(taskId);
@@ -112,15 +113,15 @@ public class DeploymentHelper {
             taskState = taskService.getTask(taskId);
 
             if (taskState.getCurrentStepNr() > lastLoggedStep) {
-                logStepState(taskId, taskState.getCurrentStepNr());
+                logStepState(logLevel, taskId, taskState.getCurrentStepNr());
                 lastLoggedStep = taskState.getCurrentStepNr();
             }
         }
 
-        log.info("-----------------------");
-        log.info("Task execution result: ");
-        log.info("-----------------------");
-        logTaskState(taskId);
+        log.log(logLevel, "-----------------------");
+        log.log(logLevel, "Task execution result: ");
+        log.log(logLevel, "-----------------------");
+        logTaskState(logLevel, taskId);
 
         taskService.archive(taskId);
 
@@ -131,34 +132,34 @@ public class DeploymentHelper {
     /**
      * Logs information about task and all steps
      */
-    public void logTaskState(String taskId) {
+    public void logTaskState(LogLevel logLevel, String taskId) {
         TaskState taskState = proxies.getTaskService().getTask(taskId);
-        log.info(format("%s Description    %s", taskId, taskState.getDescription()));
-        log.info(format("%s State          %s %d/%d", taskId, taskState.getState(), taskState.getCurrentStepNr(), taskState.getNrSteps()));
+        log.log(logLevel, format("%s Description    %s", taskId, taskState.getDescription()));
+        log.log(logLevel, format("%s State          %s %d/%d", taskId, taskState.getState(), taskState.getCurrentStepNr(), taskState.getNrSteps()));
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
-        logDate(taskId + " Start      %s", taskState.getStartDate(), sdf);
-        logDate(taskId + " Completion %s", taskState.getCompletionDate(), sdf);
+        logDate(taskId + " Start      %s", taskState.getStartDate(), sdf, logLevel);
+        logDate(taskId + " Completion %s", taskState.getCompletionDate(), sdf, logLevel);
 
         for (int i = 1; i <= taskState.getNrSteps(); i++) {
-            logStepState(taskId, i);
+            logStepState(logLevel, taskId, i);
         }
 
         if (TaskExecutionState.STOPPED.equals(taskState.getState()))
             throw new IllegalStateException(format("Errors when executing task %s", taskId));
     }
 
-    private void logDate(String pattern, DateTime date, SimpleDateFormat sdf) {
+    private void logDate(String pattern, DateTime date, SimpleDateFormat sdf, LogLevel logLevel) {
         if (date != null) {
-            final GregorianCalendar startDate = date.toGregorianCalendar();
-            log.info(format(pattern, sdf.format(startDate.getTime())));
+            final GregorianCalendar theDate = date.toGregorianCalendar();
+            log.log(logLevel, format(pattern, sdf.format(theDate.getTime())));
         }
     }
 
     /**
      * Logs information about single step
      */
-    public void logStepState(String taskId, int stepNumber) {
+    public void logStepState(LogLevel logLevel, String taskId, int stepNumber) {
         final StepState stepInfo = proxies.getTaskService().getStep(taskId, stepNumber, null);
         final String description = stepInfo.getDescription();
         String stepInfoMessage;
@@ -168,7 +169,7 @@ public class DeploymentHelper {
             stepInfoMessage = format("%s step #%d %s\t%s\n%s", taskId, stepNumber, stepInfo.getState(), description, stepInfo.getLog());
         }
 
-        log.info(stepInfoMessage);
+        log.log(logLevel, stepInfoMessage);
 
     }
 

@@ -12,6 +12,7 @@ package com.xebialabs.gradle.xldeploy
 import org.gradle.api.Project
 import org.gradle.api.ProjectConfigurationException
 import org.gradle.api.artifacts.Dependency
+import org.gradle.api.logging.LogLevel
 import org.gradle.api.tasks.bundling.War
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Before
@@ -35,8 +36,17 @@ class DarConfigurationTaskTest {
     project.apply plugin: 'war'
     project.apply plugin: XlDeployPlugin
     project.version = "1.0"
+    // Support for Gradle test runner passing in parent builds repositories to support builds behind a corporate firewall.
+    List<String> gradleMavenRepos = System.getProperty('gradleMavenRepos', '').split(/,/)
     project.dependencies {
-      project.getRepositories().mavenCentral()
+      if(gradleMavenRepos) {
+        gradleMavenRepos.each { repo ->
+          project.getRepositories().maven { url = repo }
+        }
+      }
+      else {
+        project.getRepositories().mavenCentral()
+      }
     }
 
     configureDar = project.tasks.configureDar as DarConfigurationTask
@@ -148,5 +158,12 @@ class DarConfigurationTaskTest {
     generatedManifest.write("""<udm.DeploymentPackage version="\${project.version}" application="HelloDeployment"/>""")
     configureDar.execute()
     assert configureDar.evaluatedManifest.resolvedManifestContent.contains("version=\"1.0\"")
+  }
+
+  @Test
+  public void defaultLogLevelIsInfo() {
+    def ext = project.extensions.getByName(XlDeployPlugin.PLUGIN_EXTENSION_NAME) as XlDeployPluginExtension
+    def logLevel = LogLevel.valueOf(ext.xldDeployLogLevel)
+    assert logLevel == LogLevel.INFO
   }
 }
