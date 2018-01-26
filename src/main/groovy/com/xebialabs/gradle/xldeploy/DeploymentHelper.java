@@ -138,8 +138,8 @@ public class DeploymentHelper {
         log.log(logLevel, format("%s State          %s %d/%d", taskId, taskState.getState(), taskState.getCurrentStepNr(), taskState.getNrSteps()));
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
-        logDate("%s Start      %s", taskId, taskState.getStartDate(), sdf, logLevel);
-        logDate("%s Completion %s", taskId, taskState.getCompletionDate(), sdf, logLevel);
+        logDate(taskId + " Start      %s", taskState.getStartDate(), sdf, logLevel);
+        logDate(taskId + " Completion %s", taskState.getCompletionDate(), sdf, logLevel);
 
         for (int i = 1; i <= taskState.getNrSteps(); i++) {
             logStepState(logLevel, taskId, i);
@@ -149,10 +149,10 @@ public class DeploymentHelper {
             throw new IllegalStateException(format("Errors when executing task %s", taskId));
     }
 
-    private void logDate(String pattern, String taskId, DateTime date, SimpleDateFormat sdf, LogLevel logLevel) {
+    private void logDate(String pattern, DateTime date, SimpleDateFormat sdf, LogLevel logLevel) {
         if (date != null) {
             final GregorianCalendar theDate = date.toGregorianCalendar();
-            log.log(logLevel, format(pattern, taskId, sdf.format(theDate.getTime())));
+            log.log(logLevel, format(pattern, sdf.format(theDate.getTime())));
         }
     }
 
