@@ -9,13 +9,14 @@
  */
 buildscript {
   repositories {
+    jcenter()
     maven {
       url "https://dist.xebialabs.com/public/maven2/"
     }
   }
-}
-plugins {
-  id "com.xebialabs.xl-deploy" version "0.5.0"
+  dependencies {
+    classpath "com.xebialabs.gradle:xl-deploy-gradle-plugin:0.6.1"
+  }
 }
 
 apply plugin: 'war'
@@ -28,6 +29,7 @@ xldeploy {
   xldUsername = "admin"
   xldPassword = "admin"
   xldEnvironmentId = "Environments/local"
+  xldDeployLogLevel = LogLevel.LIFECYCLE
 }
 
 repositories {
