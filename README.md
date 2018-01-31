@@ -42,7 +42,7 @@ The plugin is available at [Gradle Plugins repository](https://plugins.gradle.or
       }
     }
     plugins {
-      id "com.xebialabs.xl-deploy" version "0.5.0"
+      id "com.xebialabs.xl-deploy" version "0.6.2"
     }
 
 Or this on Gradle 2.2 or lower:
@@ -58,7 +58,7 @@ Or this on Gradle 2.2 or lower:
         }
       }
       dependencies {
-        classpath 'com.xebialabs.gradle:xl-deploy-gradle-plugin:0.5.0'
+        classpath 'com.xebialabs.gradle:xl-deploy-gradle-plugin:0.6.2'
       }
     }
 

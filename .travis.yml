@@ -8,7 +8,7 @@ deploy:
   provider: releases
   api_key:
     secure: MRLNi3AMqraAqSHkCQIcJtO4fc7MNsJuiclTDUmgkeUsP1Zt4qyMm7S5x73IsPMwEvDqtTvhnNDhf4B2juEeE9D4TdjMbBhV56iptFzwfIpVzF3sV8gzvki6P3jJKylC9gldgkG03gQae81ruFrWpIJIyrOJjG3Kg1Ms7+ZoIXw=
-  file: build/libs/gradle-xld-plugin-0.5.0.jar
+  file: build/libs/gradle-xld-plugin-0.6.2.jar
   skip_cleanup: true
   on:
     all_branches: true
