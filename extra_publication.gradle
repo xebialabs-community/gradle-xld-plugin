@@ -20,6 +20,7 @@ publishing {
 
       groupId 'com.xebialabs.gradle'
       artifactId 'xl-deploy-gradle-plugin'
+      version this.version
 
       pom.withXml {
         asNode().appendNode('description', 'Gradle plugin to execute deployments using XL Deploy server')
@@ -53,3 +54,5 @@ bintray {
     }
   }
 }
+
+tasks.bintrayUpload.dependsOn tasks.publishToMavenLocal
