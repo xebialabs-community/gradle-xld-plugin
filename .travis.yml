@@ -1,9 +1,8 @@
 dist: trusty
 language: groovy
 notifications:
-  hipchat:
-    rooms:
-      secure: BRxyikZ3/l8yGg63JU/oa7YETcMUhcHXQHFf4EF7kdD4hSgqhmHHlCMjDFcx84rTTf1CrcpiKVJfn1LPFADKr3QMEaatx9nWCPs1iHbZBfRhUJPVaG/1kN0cVyU5vz0v2KY2hx5FTnoecvL6ihdhpnWoWPZZxfDGT7t6uhAElbg=
+  slack:
+    secure: V4zpnowkZ3XRFooo3WCakpw9OPBK5aQVZWJ89sDT7BA+i9T/xAFIhAVLu6augnSgGXAXD2Lmbsyk6OKR6OdcTpnt1IMJKRboCEOtG1Bn1OrvaIck6cRl3asF+mXS/V6CZPmTvMfq5pSpa4sRb11NLKn8xPO8aGQTfgm2RZYmmFQ=
 deploy:
   provider: releases
   api_key:
